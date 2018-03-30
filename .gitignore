@@ -1,0 +1,31 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Composer
+vendor/
+
+# MG API Key (temporarily hardcoded, but in a separate file
+# so I don't check it in to GitHub accidentally :D )
+event/api_key.php
+
+# MG makegood configuration file that the EPV moans about.
+#makegood_preload.php
+*~
+
+# Test coverage report output
+/coverage
