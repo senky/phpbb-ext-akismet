@@ -51,17 +51,19 @@ class admin_controller
 	const FORM_KEY = 'phpbb/akismet';
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\request\request $request Request object
-	* @param \phpbb\template\template $template Template object
-	* @param \phpbb\user $user User object
-	* @param \phpbb\log\log_interface $log Log object
-	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\language\language $language Language object
-	* @param string $php_ext
-	* @param string $phpbb_root_path
-	*/
+	 * Constructor
+	 *
+	 * @param \phpbb\request\request            $request      Request object
+	 * @param \phpbb\template\template          $template     Template object
+	 * @param \phpbb\user                       $user         User object
+	 * @param \phpbb\log\log_interface          $log          Log object
+	 * @param \phpbb\config\config              $config       Config object
+	 * @param \phpbb\language\language          $language     Language object
+	 * @param \phpbb\group\helper               $group_helper Group helper object
+	 * @param \phpbb\db\driver\driver_interface $db           Database drive
+	 * @param string                            $php_ext
+	 * @param string                            $phpbb_root_path
+	 */
 	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\log\log_interface $log, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\group\helper $group_helper, \phpbb\db\driver\driver_interface $db, $php_ext, $phpbb_root_path)
 	{
 		$this->request = $request;
