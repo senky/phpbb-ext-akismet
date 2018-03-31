@@ -254,7 +254,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * Call Akismet's comment-check method using our handy client.
 	 * I hear it was written by a talented and ruggedly-handsome programmer.
-	 * 
+	 *
 	 * @param int $user_id User ID of the commenter (or newly-registered potential commenter)
 	 * @param array $params Akismet parameters
 	 * @throws \Exception
