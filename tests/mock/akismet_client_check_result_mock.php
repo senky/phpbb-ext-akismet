@@ -1,5 +1,5 @@
 <?php
-namespace gothick\akismet\tests\mock;
+namespace phpbb\akismet\tests\mock;
 
 class akismet_client_check_result_mock extends \Gothick\AkismetClient\Result\CommentCheckResult
 {
@@ -11,10 +11,12 @@ class akismet_client_check_result_mock extends \Gothick\AkismetClient\Result\Com
 		$this->result = $result;
 		$this->blatant = $blatant;
 	}
+
 	public function isSpam()
 	{
 		return $this->result;
 	}
+
 	public function isBlatantSpam()
 	{
 		return $this->blatant;

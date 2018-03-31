@@ -7,7 +7,7 @@
  *
  */
 
-namespace gothick\akismet\tests\mock;
+namespace phpbb\akismet\tests\mock;
 
 /**
 * User Mock
@@ -16,6 +16,7 @@ namespace gothick\akismet\tests\mock;
 class user extends \phpbb\user
 {
 	protected $username;
+
 	public function __construct($username)
 	{
 		$this->data['username'] = $username;

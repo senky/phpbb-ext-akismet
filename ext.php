@@ -8,7 +8,7 @@
  *
  */
 
-namespace gothick\akismet;
+namespace phpbb\akismet;
 
 /**
 * Extension class for custom enable/disable/purge actions
@@ -25,9 +25,10 @@ namespace gothick\akismet;
 class ext extends \phpbb\extension\base
 {
 	protected static $notification_types = array(
-			'gothick.akismet.notification.type.topic_in_queue',
-			'gothick.akismet.notification.type.post_in_queue',
+			'phpbb.akismet.notification.type.topic_in_queue',
+			'phpbb.akismet.notification.type.post_in_queue',
 	);
+
 	/**
 	* Enable our notifications.
 	*
@@ -54,6 +55,7 @@ class ext extends \phpbb\extension\base
 			break;
 		}
 	}
+
 	/**
 	* Disable our notifications.
 	*
@@ -80,6 +82,7 @@ class ext extends \phpbb\extension\base
 			break;
 		}
 	}
+
 	/**
 	* Purge our notifications
 	*

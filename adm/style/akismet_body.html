@@ -1,44 +1,42 @@
-<!-- INCLUDE overall_header.html -->
+{% include 'overall_header.html' %}
 
-<h1>{L_SETTINGS}</h1>
+<a id="maincontent"></a>
 
-<h2>{L_ACP_AKISMET_WELCOME}</h2>
-<p>{L_ACP_AKISMET_INTRO}</p>
-<p>{L_ACP_AKISMET_SIGN_UP}</p>
-<p>{L_ACP_AKISMET_ADMINS_AND_MODS_OKAY}</p>
-<p>{L_ACP_AKISMET_UNENCRYPTED_WARNING}</p>
+<h1>{{ lang('SETTINGS') }}</h1>
+
+<h2>{{ lang('ACP_AKISMET_WELCOME') }}</h2>
+<p>{{ lang('ACP_AKISMET_INTRO') }}</p>
+<p>{{ lang('ACP_AKISMET_SIGN_UP') }}</p>
+<p>{{ lang('ACP_AKISMET_ADMINS_AND_MODS_OKAY') }}</p>
+<p>{{ lang('ACP_AKISMET_UNENCRYPTED_WARNING') }}</p>
 
 <form id="acp_board" method="post" action="{U_ACTION}">
 	<fieldset>
-		<legend>{L_ACP_AKISMET_AKISMET_API_KEY}</legend>
+		<legend>{{ lang('ACP_AKISMET_AKISMET_API_KEY') }}</legend>
 		<dl>
-			<dt><label for="api_key">{L_ACP_AKISMET_API_KEY}</label></dt>
-			<dd><input type="text" name="api_key" id="api_key" value="{API_KEY}" /></dd>
+			<dt><label for="api_key">{{ lang('ACP_AKISMET_API_KEY') }}</label></dt>
+			<dd><input type="text" name="api_key" id="api_key" value="{{ API_KEY }}" /></dd>
 		</dl>
 	</fieldset>
 	<fieldset>
-		<legend>{L_ACP_AKISMET_GENERAL_SETITNGS}</legend>
+		<legend>{{ lang('ACP_AKISMET_GENERAL_SETITNGS') }}</legend>
 		<dl>
 			<dt>
-				<label for="gothick_akismet_check_registrations">{L_ACP_AKISMET_CHECK_REGISTRATIONS}{L_COLON}</label>
-				<br/>
-				<span>{L_ACP_AKISMET_CHECK_REGISTRATIONS_EXPLAIN}</span>
+				<label for="phpbb_akismet_check_registrations">{{ lang('ACP_AKISMET_CHECK_REGISTRATIONS') ~ lang('COLON') }}</label><br/><span>{{ lang('ACP_AKISMET_CHECK_REGISTRATIONS_EXPLAIN') }}</span>
 			</dt>
 			<dd>
-				<label><input type="radio" class="radio" id="check_registrations" name="check_registrations" value="1"<!-- IF S_CHECK_REGISTRATIONS --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" class="radio" name="check_registrations" value="0"<!-- IF not S_CHECK_REGISTRATIONS --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+				<label><input type="radio" class="radio" id="check_registrations" name="check_registrations" value="1"{% if S_CHECK_REGISTRATIONS %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+				<label><input type="radio" class="radio" name="check_registrations" value="0"{% if not S_CHECK_REGISTRATIONS %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
 			</dd>
 		</dl>
 		<dl>
 			<dt>
-				<label for="add_registering_spammers_to_group">{L_ACP_AKISMET_ADD_DETECTED_SPAMMERS_TO_GROUP}{L_COLON}</label>
-				<br/>
-				<span>{L_ACP_AKISMET_ADD_DETECTED_SPAMMERS_TO_GROUP_EXPLAIN}</span>
+				<label for="add_registering_spammers_to_group">{{ lang('ACP_AKISMET_ADD_DETECTED_SPAMMERS_TO_GROUP') ~ lang('COLON') }}</label><br/><span>{{ lang('ACP_AKISMET_ADD_DETECTED_SPAMMERS_TO_GROUP_EXPLAIN') }}</span>
 			</dt>
 			<dd>
 				<dd>
 					<select name="add_registering_spammers_to_group" id="add_registering_spammers_to_group">
-						<option value="0">{L_ACP_AKISMET_DONT_ADD_REGISTERING_SPAMMERS_TO_GROUP}</option>
+						<option value="0">{{ lang('ACP_AKISMET_DONT_ADD_REGISTERING_SPAMMERS_TO_GROUP') }}</option>
 						{S_GROUP_LIST}
 					</select>
 				</dd>
@@ -46,14 +44,12 @@
 		</dl>
 		<dl>
 			<dt>
-				<label for="add_registering_blatant_spammers_to_group">{L_ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP}{L_COLON}</label>
-				<br/>
-				<span>{L_ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP_EXPLAIN}</span>
+				<label for="add_registering_blatant_spammers_to_group">{{ lang('ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP') ~ lang('COLON') }}</label><br/><span>{{ lang('ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP_EXPLAIN') }}</span>
 			</dt>
 			<dd>
 				<dd>
 					<select name="add_registering_blatant_spammers_to_group" id="add_registering_blatant_spammers_to_group">
-						<option value="0">{L_ACP_AKISMET_DONT_ADD_REGISTERING_BLATANT_SPAMMERS_TO_GROUP}</option>
+						<option value="0">{{ lang('ACP_AKISMET_DONT_ADD_REGISTERING_BLATANT_SPAMMERS_TO_GROUP') }}</option>
 						{S_GROUP_LIST_BLATANT}
 					</select>
 				</dd>
@@ -61,10 +57,11 @@
 		</dl>
 	</fieldset>
 	<fieldset class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
 	</fieldset>
 	{S_FORM_TOKEN}
 
 </form>
-<!-- INCLUDE overall_footer.html -->
+
+{% include 'overall_footer.html' %}

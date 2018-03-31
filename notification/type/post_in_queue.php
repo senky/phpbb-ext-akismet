@@ -8,13 +8,13 @@
  *
  */
 
-namespace gothick\akismet\notification\type;
+namespace phpbb\akismet\notification\type;
 
 class post_in_queue extends \phpbb\notification\type\post_in_queue
 {
 	public function get_type()
 	{
-		return 'gothick.akismet.notification.type.post_in_queue';
+		return 'phpbb.akismet.notification.type.post_in_queue';
 	}
 
 	/**
@@ -24,6 +24,6 @@ class post_in_queue extends \phpbb\notification\type\post_in_queue
 	 */
 	public function get_email_template()
 	{
-		return '@gothick_akismet/post_in_queue';
+		return '@phpbb_akismet/post_in_queue';
 	}
 }

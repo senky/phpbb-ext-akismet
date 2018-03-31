@@ -1,7 +1,6 @@
 services:
-
-    gothick.akismet.listener:
-        class: gothick\akismet\event\main_listener
+    phpbb.akismet.listener:
+        class: phpbb\akismet\event\main_listener
         arguments:
             - '@user'
             - '@request'
@@ -14,8 +13,8 @@ services:
         tags:
             - { name: event.listener }
 
-    gothick.akismet.admin.controller:
-        class: gothick\akismet\controller\admin_controller
+    phpbb.akismet.admin.controller:
+        class: phpbb\akismet\controller\admin_controller
         arguments:
             - '@request'
             - '@template'
@@ -28,27 +27,27 @@ services:
             - '%core.php_ext%'
             - '%core.root_path%'
 
-    gothick.akismet.client.factory:
-        class: gothick\akismet\utility\akismet_factory
+    phpbb.akismet.client.factory:
+        class: phpbb\akismet\utility\akismet_factory
         arguments:
             - '@config'
             - '@log'
             - '@user'
 
-    gothick.akismet.client:
+    phpbb.akismet.client:
         class: Gothick\AkismetClient\Client
-        factory_service: gothick.akismet.client.factory
+        factory_service: phpbb.akismet.client.factory
         factory_method: createAkismet
 
-    gothick.akismet.notification.type.post_in_queue:
-        class: gothick\akismet\notification\type\post_in_queue
+    phpbb.akismet.notification.type.post_in_queue:
+        class: phpbb\akismet\notification\type\post_in_queue
         shared: false
         parent: notification.type.post_in_queue
         tags:
             - { name: notification.type }
 
-    gothick.akismet.notification.type.topic_in_queue:
-        class: gothick\akismet\notification\type\topic_in_queue
+    phpbb.akismet.notification.type.topic_in_queue:
+        class: phpbb\akismet\notification\type\topic_in_queue
         shared: false
         parent: notification.type.topic_in_queue
         tags:

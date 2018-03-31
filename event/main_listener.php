@@ -7,12 +7,10 @@
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
-namespace gothick\akismet\event;
+namespace phpbb\akismet\event;
 
 /**
- *
  * @ignore
- *
  */
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -22,7 +20,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class main_listener implements EventSubscriberInterface
 {
-
 	/* @var \phpbb\user */
 	protected $user;
 
@@ -63,9 +60,7 @@ class main_listener implements EventSubscriberInterface
 	 * @param string $php_ext
 	 * @param string $phpbb_root_path
 	 */
-	public function __construct (\phpbb\user $user, \phpbb\request\request $request, \phpbb\config\config $config,
-			\phpbb\log\log_interface $log, \phpbb\auth\auth $auth, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container,
-			$php_ext, $phpbb_root_path)
+	public function __construct(\phpbb\user $user, \phpbb\request\request $request, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\auth\auth $auth, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $php_ext, $phpbb_root_path)
 	{
 		$this->user = $user;
 		$this->config = $config;
@@ -75,20 +70,15 @@ class main_listener implements EventSubscriberInterface
 		$this->php_ext = $php_ext;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->request = $request;
-
-		if (!function_exists('group_user_add'))
-		{
-			include $this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext;
-		}
 	}
 
-	static public function getSubscribedEvents ()
+	static public function getSubscribedEvents()
 	{
 		return array(
-				'core.posting_modify_submit_post_before' => 'check_submitted_post',
-				'core.notification_manager_add_notifications' => 'add_akismet_details_to_notification',
-				'core.user_add_after' => 'check_new_user',
-				'core.delete_group_after' => 'group_deleted'
+			'core.posting_modify_submit_post_before'		=> 'check_submitted_post',
+			'core.notification_manager_add_notifications'	=> 'add_akismet_details_to_notification',
+			'core.user_add_after'							=> 'check_new_user',
+			'core.delete_group_after'						=> 'group_deleted'
 		);
 	}
 
@@ -101,7 +91,7 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * @param \phpbb\event\data $event
 	 */
-	public function check_submitted_post ($event)
+	public function check_submitted_post($event)
 	{
 		// Skip the Akismet check for anyone who's a moderator or an administrator. If your
 		// admins and moderators are posting spam, you've got bigger problems...
@@ -115,7 +105,7 @@ class main_listener implements EventSubscriberInterface
 				$data['force_approved_state'] = ITEM_UNAPPROVED;
 				// This will be used by our notification event listener to
 				// figure out that the post was moderated by Akismet.
-				$data['gothick_akismet_unapproved'] = true;
+				$data['phpbb_akismet_unapproved'] = true;
 				$event['data'] = $data;
 
 				// Note our action in the moderation log
@@ -128,11 +118,7 @@ class main_listener implements EventSubscriberInterface
 					$log_message = 'AKISMET_LOG_POST_DISAPPROVED';
 				}
 
-				$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $log_message, false,
-						array(
-								$data['topic_title'],
-								$this->user->data['username']
-						));
+				$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $log_message, false, array($data['topic_title'], $this->user->data['username']));
 			}
 		}
 	}
@@ -142,19 +128,18 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * @param \phpbb\event\data $event
 	 */
-	public function check_new_user ($event)
+	public function check_new_user($event)
 	{
-		if ($this->config['gothick_akismet_check_registrations'])
+		if ($this->config['phpbb_akismet_check_registrations'])
 		{
-			// We get $vars = array('user_id', 'user_row', 'cp_data');
 			$user_id = $event['user_id']; // Can't use $this->user->data['user_id'] as there isn't an actual user logged in during registration, of course.
 			$user_row = $event['user_row'];
 			$params = [
-					'comment_type' => 'signup',
-					'user_ip' => $this->user->ip,
-					'user_agent' => $this->user->browser,
-					'comment_author' => $user_row['username'],
-					'comment_author_email' => $user_row['user_email']
+				'comment_type'			=> 'signup',
+				'user_ip'				=> $this->user->ip,
+				'user_agent'			=> $this->user->browser,
+				'comment_author'		=> $user_row['username'],
+				'comment_author_email'	=> $user_row['user_email'],
 			];
 
 			$is_spam = false;
@@ -169,32 +154,26 @@ class main_listener implements EventSubscriberInterface
 					$is_blatant_spam = $result->isBlatantSpam();
 				}
 			}
-			catch ( \Exception $e )
+			catch (\Exception $e)
 			{
 				// akismet_comment_check will have quietly logged an error. All we want
 				// to do is quietly pass registrations through okay on any kind of
 				// general failure.
 			}
+
 			if ($is_spam)
 			{
 				$log_message = $is_blatant_spam ? 'AKISMET_LOG_BLATANT_SPAMMER_REGISTRATION' : 'AKISMET_LOG_SPAMMER_REGISTRATION';
-				$this->log->add(
-						'mod',
-						$user_id,
-						$this->user->ip,
-						$log_message,
-						false,
-						[$user_row['username']]
-				);
+				$this->log->add('mod', $user_id, $this->user->ip, $log_message, false, array($user_row['username']));
 
-				if ($group_id = $this->config['gothick_akismet_add_registering_spammers_to_group'])
+				if ($group_id = $this->config['phpbb_akismet_add_registering_spammers_to_group'])
 				{
 					$this->group_user_add($group_id, $user_id);
 				}
 
 				if ($is_blatant_spam)
 				{
-					if ($group_id = $this->config['gothick_akismet_add_registering_blatant_spammers_to_group'])
+					if ($group_id = $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
 					{
 						$this->group_user_add($group_id, $user_id);
 					}
@@ -213,40 +192,40 @@ class main_listener implements EventSubscriberInterface
 	 */
 	protected function group_user_add($group_id, $user_id)
 	{
+		if (!function_exists('group_user_add'))
+		{
+			include $this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext;
+		}
+
 		group_user_add($group_id, $user_id);
 	}
 
 	/**
 	 * Check a comment for spam.
 	 *
-	 * @param array $data
-	 *        	Data array from event that triggered us.
+	 * @param array $data Data array from event that triggered us.
 	 */
-	private function is_spam ($data)
+	private function is_spam($data)
 	{
 		$is_spam = false;
 
-		// Akismet fields
-		$params = array();
-
-		$params['user_ip'] = $this->user->ip;
-		// TODO: Check this is sending the right thing; we need the user's full User-Agent string
-		$params['user_agent'] = $this->user->browser;
-		$params['comment_content'] = $data['message'];
-		$params['comment_author_email'] = $this->user->data['user_email'];
-		$params['comment_author'] = $this->user->data['username_clean'];
-
-		// URL of poster, i.e. poster's "website" profile field.
+		// For URL of poster, i.e. poster's "website" profile field.
 		$this->user->get_profile_fields($this->user->data['user_id']);
-		$url = isset($this->user->profile_fields['pf_phpbb_website']) ? $this->user->profile_fields['pf_phpbb_website'] : '';
 
-		$params['comment_author_url'] = $url;
-
-		// URL of topic
-		$params['permalink'] = generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "t={$data['topic_id']}", true, '');
-		// 'forum-post' recommended for type:
-		// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
-		$params['comment_type'] = 'forum-post';
+		// Akismet fields
+		$params = array(
+			'user_ip'				=> $this->user->ip,
+			// TODO: Check this is sending the right thing; we need the user's full User-Agent string
+			'user_agent'			=> $this->user->browser,
+			'comment_content'		=> $data['message'],
+			'comment_author_email'	=> $this->user->data['user_email'],
+			'comment_author'		=> $this->user->data['username_clean'],
+			'comment_author_url'	=> isset($this->user->profile_fields['pf_phpbb_website']) ? $this->user->profile_fields['pf_phpbb_website'] : '',
+			'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "t={$data['topic_id']}", true, ''),
+			// 'forum-post' recommended for type:
+			// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
+			'comment_type'			=> 'forum-post',
+		);
 
 		try
 		{
@@ -268,23 +247,25 @@ class main_listener implements EventSubscriberInterface
 			// want silently to ignore any problems and not mark anything as spam, given that we can't
 			// tell whether it is or not.
 		}
+
 		return $is_spam;
 	}
 
 	/**
 	 * Call Akismet's comment-check method using our handy client.
 	 * I hear it was written by a talented and ruggedly-handsome programmer.
+	 * 
 	 * @param int $user_id User ID of the commenter (or newly-registered potential commenter)
 	 * @param array $params Akismet parameters
 	 * @throws \Exception
 	 * @return boolean|\Gothick\AkismetClient\Result\CommentCheckResult False on failure or a result oject otherwise.
 	 */
-	protected function akismet_comment_check ($user_id, $params)
+	protected function akismet_comment_check($user_id, $params)
 	{
 		try
 		{
 			/** @var \Gothick\AkismetClient\Client */
-			$akismet = $this->phpbb_container->get('gothick.akismet.client', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE);
+			$akismet = $this->phpbb_container->get('phpbb.akismet.client', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE);
 			// TODO: Use AKISMET_LOG_NO_KEY_CONFIGURED later, when we've changed things so we can do key validation.
 
 			// We can't just pass $_SERVER in to our Akismet client as phpBB turns off super globals (which is,
@@ -356,14 +337,8 @@ class main_listener implements EventSubscriberInterface
 		}
 		catch (\Exception $e)
 		{
-			$this->log->add(
-					'critical',
-					$user_id,
-					$this->user->ip,
-					'AKISMET_LOG_CALL_FAILED',
-					false,
-					[$e->getMessage()]
-			);
+			$this->log->add('critical', $user_id, $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
+
 			throw $e;
 		}
 
@@ -378,15 +353,14 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * @param \phpbb\event\data $event
 	 */
-	public function add_akismet_details_to_notification ($event)
+	public function add_akismet_details_to_notification($event)
 	{
-		if ($event['notification_type_name'] == 'notification.type.post_in_queue' ||
-				 $event['notification_type_name'] == 'notification.type.topic_in_queue')
+		if ($event['notification_type_name'] == 'notification.type.post_in_queue' || $event['notification_type_name'] == 'notification.type.topic_in_queue')
 		{
 			$data = $event['data'];
-			if (isset($data['gothick_akismet_unapproved']))
+			if (isset($data['phpbb_akismet_unapproved']))
 			{
-				$event['notification_type_name'] = 'gothick.akismet.' . $event['notification_type_name'];
+				$event['notification_type_name'] = 'phpbb.akismet.' . $event['notification_type_name'];
 			}
 			$event['data'] = $data;
 		}
@@ -398,26 +372,23 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * @param \phpbb\event\data $event
 	 */
-	public function group_deleted ($event)
+	public function group_deleted($event)
 	{
-		$group_id = $event['group_id'];
-		if ($group_id == $this->config['gothick_akismet_add_registering_spammers_to_group']) {
-			$this->config->set('gothick_akismet_add_registering_spammers_to_group', 0);
+		if ($event['group_id'] == $this->config['phpbb_akismet_add_registering_spammers_to_group'])
+		{
+			$this->config->set('phpbb_akismet_add_registering_spammers_to_group', 0);
 			$this->log_disable_group_add($event['group_name']);
 		}
-		if ($group_id == $this->config['gothick_akismet_add_registering_blatant_spammers_to_group']) {
-			$this->config->set('gothick_akismet_add_registering_blatant_spammers_to_group', 0);
+
+		if ($event['group_id'] == $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
+		{
+			$this->config->set('phpbb_akismet_add_registering_blatant_spammers_to_group', 0);
 			$this->log_disable_group_add($event['group_name']);
 		}
 	}
-	protected function log_disable_group_add ($group_name) {
-		$this->log->add(
-				'mod',
-				$this->user->data['user_id'],
-				$this->user->ip,
-				'AKISMET_LOG_SPAMMER_GROUP_REMOVED',
-				false,
-				[ $group_name ]
-		);
+
+	protected function log_disable_group_add($group_name)
+	{
+		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SPAMMER_GROUP_REMOVED', false, array($group_name));
 	}
 }

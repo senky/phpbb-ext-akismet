@@ -7,7 +7,7 @@
  *
  */
 
-namespace gothick\akismet\tests\mock;
+namespace phpbb\akismet\tests\mock;
 
 /**
  *
@@ -18,6 +18,7 @@ namespace gothick\akismet\tests\mock;
 class akismet_mock extends \Gothick\AkismetClient\Client
 {
 	protected $blatant;
+
 	public function __construct($blatant = false)
 	{
 		$this->blatant = $blatant;

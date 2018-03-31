@@ -7,7 +7,7 @@
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
-namespace gothick\akismet\acp;
+namespace phpbb\akismet\acp;
 
 /**
  * ACP page for configuring Gothick Akismet: API key, Akismet, etc.
@@ -25,10 +25,10 @@ class akismet_module
 
 		/** @var \phpbb\language\language $language */
 		$language = $phpbb_container->get('language');
-		$language->add_lang('akismet_acp', 'gothick/akismet');
+		$language->add_lang('akismet_acp', 'phpbb/akismet');
 
-		/* @var $admin_controller \gothick\akismet\controller\admin_controller */
-		$admin_controller = $phpbb_container->get('gothick.akismet.admin.controller');
+		/* @var $admin_controller \phpbb\akismet\controller\admin_controller */
+		$admin_controller = $phpbb_container->get('phpbb.akismet.admin.controller');
 		$admin_controller->set_action($this->u_action);
 
 		$this->tpl_name = 'akismet_body';

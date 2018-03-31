@@ -8,7 +8,7 @@
  *
  */
 
-namespace gothick\akismet\controller;
+namespace phpbb\akismet\controller;
 
 /**
 * Admin controller
@@ -48,7 +48,7 @@ class admin_controller
 	/** @var string */
 	protected $phpbb_root_path;
 
-	const FORM_KEY = 'gothick/akismet';
+	const FORM_KEY = 'phpbb/akismet';
 
 	/**
 	* Constructor
@@ -62,18 +62,7 @@ class admin_controller
 	* @param string $php_ext
 	* @param string $phpbb_root_path
 	*/
-	public function __construct(
-			\phpbb\request\request $request,
-			\phpbb\template\template $template,
-			\phpbb\user $user,
-			\phpbb\log\log_interface $log,
-			\phpbb\config\config $config,
-			\phpbb\language\language $language,
-			\phpbb\group\helper $group_helper,
-			\phpbb\db\driver\driver_interface $db,
-			$php_ext,
-			$phpbb_root_path
-		)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\log\log_interface $log, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\group\helper $group_helper, \phpbb\db\driver\driver_interface $db, $php_ext, $phpbb_root_path)
 	{
 		$this->request = $request;
 		$this->template = $template;
@@ -85,17 +74,10 @@ class admin_controller
 		$this->db = $db;
 		$this->php_ext = $php_ext;
 		$this->phpbb_root_path = $phpbb_root_path;
-
-		// When unit testing, we may not have functions_acp included already.
-		if (!function_exists('adm_back_link'))
-		{
-			include $this->phpbb_root_path . 'includes/functions_acp.' . $this->php_ext;
-		}
 	}
 
 	/**
 	* Akismet settings
-	*
 	*/
 	public function display_settings()
 	{
@@ -110,27 +92,18 @@ class admin_controller
 
 			$this->save_settings();
 
-			$this->log->add(
-					'admin',
-					$this->user->data['user_id'],
-					$this->user->ip,
-					'AKISMET_LOG_SETTING_CHANGED'
-			);
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SETTING_CHANGED');
 
-			trigger_error(
-					$this->language->lang('ACP_AKISMET_SETTING_SAVED') .
-					adm_back_link($this->u_action)
-			);
+			trigger_error($this->language->lang('ACP_AKISMET_SETTING_SAVED') . adm_back_link($this->u_action));
 
 		}
-		$this->template->assign_vars(
-				array(
-						'U_ACTION' => $this->u_action,
-						'API_KEY' => $this->config['gothick_akismet_api_key'],
-						'S_CHECK_REGISTRATIONS' => $this->config['gothick_akismet_check_registrations'],
-						'S_GROUP_LIST' => $this->group_select_options($this->config['gothick_akismet_add_registering_spammers_to_group']),
-						'S_GROUP_LIST_BLATANT' => $this->group_select_options($this->config['gothick_akismet_add_registering_blatant_spammers_to_group'])
-				));
+		$this->template->assign_vars(array(
+			'U_ACTION'				=> $this->u_action,
+			'API_KEY'				=> $this->config['phpbb_akismet_api_key'],
+			'S_CHECK_REGISTRATIONS'	=> $this->config['phpbb_akismet_check_registrations'],
+			'S_GROUP_LIST'			=> $this->group_select_options($this->config['phpbb_akismet_add_registering_spammers_to_group']),
+			'S_GROUP_LIST_BLATANT'	=> $this->group_select_options($this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
+		));
 	}
 
 	protected function group_select_options($selected_group_id = 0)
@@ -159,10 +132,10 @@ class admin_controller
 	*/
 	protected function save_settings()
 	{
-		$this->config->set('gothick_akismet_api_key', $this->request->variable('api_key', ''));
-		$this->config->set('gothick_akismet_check_registrations', $this->request->variable('check_registrations', 0));
-		$this->config->set('gothick_akismet_add_registering_spammers_to_group', $this->request->variable('add_registering_spammers_to_group', 0));
-		$this->config->set('gothick_akismet_add_registering_blatant_spammers_to_group', $this->request->variable('add_registering_blatant_spammers_to_group', 0));
+		$this->config->set('phpbb_akismet_api_key', $this->request->variable('api_key', ''));
+		$this->config->set('phpbb_akismet_check_registrations', $this->request->variable('check_registrations', 0));
+		$this->config->set('phpbb_akismet_add_registering_spammers_to_group', $this->request->variable('add_registering_spammers_to_group', 0));
+		$this->config->set('phpbb_akismet_add_registering_blatant_spammers_to_group', $this->request->variable('add_registering_blatant_spammers_to_group', 0));
 	}
 	/**
 	* Set action

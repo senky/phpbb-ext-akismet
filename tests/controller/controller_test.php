@@ -8,35 +8,34 @@
  *
  */
 
-/*
- * Many of the ideas in my tests were taken from the excellent set of official extensions
- * at https://github.com/phpbb-extensions, especially ad-management, autogroups and boardrules.
- * Thanks!
- *
- * https://github.com/phpbb-extensions/ad-management/blob/master/tests/controller/admin_input_test.php
- * https://github.com/phpbb-extensions/autogroups/blob/master/tests/controller/submit_autogroup_rule_test.php
- */
-
 /**
  * Override form_key global functions with ones that depend on a simple flag
  * we can set in our test class. Note we have to change namespaces so the functions
  * end up in the controller's namespace.
  */
-namespace gothick\akismet\controller {
+namespace phpbb\akismet\controller
+{
 	function check_form_key($dummy)
 	{
-		return \gothick\akismet\tests\controller\main_controller_test::$check_form_key_result;
+		return \phpbb\akismet\tests\controller\main_controller_test::$check_form_key_result;
 	}
+
 	function add_form_key($dummy)
 	{
+	}
+
+	function adm_back_link($dummy)
+	{
+		return '';
 	}
 }
 
 /**
  * Basic tests of the Admin Controller
  */
-namespace gothick\akismet\tests\controller {
-	use \gothick\akismet\controller\admin_controller;
+namespace phpbb\akismet\tests\controller
+{
+	use \phpbb\akismet\controller\admin_controller;
 
 	class main_controller_test extends \phpbb_test_case
 	{
@@ -76,18 +75,18 @@ namespace gothick\akismet\tests\controller {
 		{
 			global $phpbb_root_path, $phpEx;
 
-			$controller = new \gothick\akismet\controller\admin_controller
+			$controller = new \phpbb\akismet\controller\admin_controller
 			(
-					$this->request,
-					$this->template,
-					$this->user,
-					$this->log,
-					$this->config,
-					$this->language,
-					$this->group_helper,
-					$this->db,
-					$phpEx,
-					$phpbb_root_path
+				$this->request,
+				$this->template,
+				$this->user,
+				$this->log,
+				$this->config,
+				$this->language,
+				$this->group_helper,
+				$this->db,
+				$phpEx,
+				$phpbb_root_path
 			);
 			return $controller;
 		}
@@ -126,7 +125,9 @@ namespace gothick\akismet\tests\controller {
 		{
 			self::$check_form_key_result = false;
 			$this->setExpectedTriggerError(E_USER_NOTICE, 'FORM_INVALID');
-			$this->request->method('is_set_post')->with('submit')->willReturn('submit');
+			$this->request->method('is_set_post')
+				->with('submit')
+				->willReturn('submit');
 			$controller = $this->get_controller();
 			$controller->display_settings();
 		}
@@ -136,85 +137,83 @@ namespace gothick\akismet\tests\controller {
 		 */
 		public function test_assign_vars()
 		{
-			$this->config['gothick_akismet_api_key'] = 'IM_AN_API_KEY_HONEST_GUV_123';
-			$this->config['gothick_akismet_check_registrations'] = 1;
-			$this->config['gothick_akismet_add_registering_spammers_to_group'] = 2;
-			$this->config['gothick_akismet_add_registering_blatant_spammers_to_group'] = 3;
+			$this->config['phpbb_akismet_api_key'] = 'IM_AN_API_KEY_HONEST_GUV_123';
+			$this->config['phpbb_akismet_check_registrations'] = 1;
+			$this->config['phpbb_akismet_add_registering_spammers_to_group'] = 2;
+			$this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'] = 3;
 			$this->db->expects($this->any())
 				->method('sql_fetchrow')
-				->will(
-					$this->onConsecutiveCalls(
-							array(
-									// Should be ignored, as we ignore all special groups except NEWLY_REGISTERED
-									'group_id' => '1',
-									'group_type' => GROUP_SPECIAL,
-									'group_name' => 'ADMINISTRATORS'
-							),
-							array(
-									// Should be picked up
-									'group_id' => '2',
-									'group_type' => GROUP_HIDDEN,
-									'group_name' => 'Newly-Registered Spammers'
-							),
-							array(
-									// Should be picked up
-									'group_id' => '3',
-									'group_type' => GROUP_HIDDEN,
-									'group_name' => 'Newly-Registered Blatant Spammers'
-							),
-							false, // End of rows
-							array(
-									// Should be ignored, as we ignore all special groups except NEWLY_REGISTERED
-									'group_id' => '1',
-									'group_type' => GROUP_SPECIAL,
-									'group_name' => 'ADMINISTRATORS'
-							),
-							array(
-									// Should be picked up
-									'group_id' => '2',
-									'group_type' => GROUP_HIDDEN,
-									'group_name' => 'Newly-Registered Spammers'
-							),
-							array(
-									// Should be picked up
-									'group_id' => '3',
-									'group_type' => GROUP_HIDDEN,
-									'group_name' => 'Newly-Registered Blatant Spammers'
-							),
-							false // End of rows
-					));
+				->will($this->onConsecutiveCalls(
+					array(
+						// Should be ignored, as we ignore all special groups except NEWLY_REGISTERED
+						'group_id' => '1',
+						'group_type' => GROUP_SPECIAL,
+						'group_name' => 'ADMINISTRATORS',
+					),
+					array(
+						// Should be picked up
+						'group_id' => '2',
+						'group_type' => GROUP_HIDDEN,
+						'group_name' => 'Newly-Registered Spammers',
+					),
+					array(
+						// Should be picked up
+						'group_id' => '3',
+						'group_type' => GROUP_HIDDEN,
+						'group_name' => 'Newly-Registered Blatant Spammers',
+					),
+					false, // End of rows
+					array(
+						// Should be ignored, as we ignore all special groups except NEWLY_REGISTERED
+						'group_id' => '1',
+						'group_type' => GROUP_SPECIAL,
+						'group_name' => 'ADMINISTRATORS',
+					),
+					array(
+						// Should be picked up
+						'group_id' => '2',
+						'group_type' => GROUP_HIDDEN,
+						'group_name' => 'Newly-Registered Spammers',
+					),
+					array(
+						// Should be picked up
+						'group_id' => '3',
+						'group_type' => GROUP_HIDDEN,
+						'group_name' => 'Newly-Registered Blatant Spammers',
+					),
+					false // End of rows
+				));
 
 			$this->template
 				->expects($this->once())
 				->method('assign_vars')
-				->with(
-						$this->callback(function($vars) {
+				->with($this->callback(function($vars) {
+					if ($vars['U_ACTION'] != 'index_test.php')
+					{
+						return false;
+					}
+					if ($vars['API_KEY'] != 'IM_AN_API_KEY_HONEST_GUV_123')
+					{
+						return false;
+					}
+					if ($vars['S_CHECK_REGISTRATIONS'] != 1)
+					{
+						return false;
+					}
+					if (!preg_match('/option value="2" selected="selected"/', $vars['S_GROUP_LIST']))
+					{
+						return false;
+					}
+					if (!preg_match('/option value="3" selected="selected"/', $vars['S_GROUP_LIST_BLATANT']))
+					{
+						return false;
+					}
 
-							if ($vars['U_ACTION'] != 'index_test.php')
-							{
-								return false;
-							}
-							if ($vars['API_KEY'] != 'IM_AN_API_KEY_HONEST_GUV_123')
-							{
-								return false;
-							}
-							if ($vars['S_CHECK_REGISTRATIONS'] != 1)
-							{
-								return false;
-							}
-							if (!preg_match('/option value="2" selected="selected"/', $vars['S_GROUP_LIST']))
-							{
-								return false;
-							}
-							if (!preg_match('/option value="3" selected="selected"/', $vars['S_GROUP_LIST_BLATANT']))
-							{
-								return false;
-							}
+					return true;
+				}));
 
-							return true;
-						}));
-
-			$this->group_helper->method('get_name')->will($this->returnArgument(0));
+			$this->group_helper->method('get_name')
+				->will($this->returnArgument(0));
 
 			$controller = $this->get_controller();
 			$controller->set_action('index_test.php');

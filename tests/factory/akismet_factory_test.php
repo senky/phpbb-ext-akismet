@@ -10,14 +10,16 @@
 
 
 // Fake this method for the factory.
-namespace gothick\akismet\utility {
-	function generate_board_url() {
+namespace phpbb\akismet\utility
+{
+	function generate_board_url()
+	{
 		return "http://fake.board.url";
 	}
 }
 
-namespace gothick\akismet\tests\factory {
-
+namespace phpbb\akismet\tests\factory
+{
 	class main_controller_test extends \phpbb_test_case
 	{
 		/** @var \phpbb\log\log_interface|\PHPUnit_Framework_MockObject_MockObject */
@@ -46,25 +48,24 @@ namespace gothick\akismet\tests\factory {
 		 */
 		public function test_factory_without_key()
 		{
-			$this->log
-				->expects($this->once())
+			$this->log->expects($this->once())
 				->method('add')
 				->with($this->equalTo('critical'));
-			$factory = new \gothick\akismet\utility\akismet_factory($this->config, $this->log, $this->user);
+			$factory = new \phpbb\akismet\utility\akismet_factory($this->config, $this->log, $this->user);
 			$this->assertFalse($factory->createAkismet());
 		}
+
 		/**
 		 * Basic test to exercise the constructor
 		 */
 		public function test_factory_with_key()
 		{
 			// If we've set the key up properly, we shouldn't get an error message.
-			$this->log
-				->expects($this->never())
+			$this->log->expects($this->never())
 				->method('add');
-			$this->config['gothick_akismet_api_key'] = 'abcdef';
+			$this->config['phpbb_akismet_api_key'] = 'abcdef';
 			$this->config['version'] = '1.2.3';
-			$factory = new \gothick\akismet\utility\akismet_factory($this->config, $this->log, $this->user);
+			$factory = new \phpbb\akismet\utility\akismet_factory($this->config, $this->log, $this->user);
 			$akismet_client = $factory->createAkismet();
 			$this->assertInstanceOf(\Gothick\AkismetClient\Client::class, $akismet_client);
 		}

@@ -7,7 +7,7 @@
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
-namespace gothick\akismet\utility;
+namespace phpbb\akismet\utility;
 
 /**
  * The Akismet Factory class is used to create a new vendor Akismet
@@ -40,26 +40,23 @@ class akismet_factory
 	 * @param \phpbb\log\log_interface $log
 	 * @param \phpbb\user $user
 	 */
-	public function __construct (\phpbb\config\config $config,
-			\phpbb\log\log_interface $log, \phpbb\user $user)
+	public function __construct(\phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\user $user)
 	{
 		$this->config = $config;
 		$this->log = $log;
 		$this->user = $user;
 
-		if (! empty($config['gothick_akismet_api_key']))
+		if (!empty($config['phpbb_akismet_api_key']))
 		{
-			$this->akismet_api_key = $config['gothick_akismet_api_key'];
+			$this->akismet_api_key = $config['phpbb_akismet_api_key'];
 		}
 	}
 
-	public function createAkismet ()
+	public function createAkismet()
 	{
 		if (empty($this->akismet_api_key))
 		{
-			$this->log->add('critical', ANONYMOUS,
-					$this->user->data['session_ip'],
-					'AKISMET_LOG_NO_KEY_CONFIGURED');
+			$this->log->add('critical', ANONYMOUS, $this->user->data['session_ip'], 'AKISMET_LOG_NO_KEY_CONFIGURED');
 			return false;
 		}
 		else
