@@ -1,34 +1,46 @@
 {
-   "name": "phpbb/akismet",
-   "type": "phpbb-extension",
-   "description": "Akismet Anti-Spam Extension for PHPBB",
-   "homepage": "https://github.com/gothick/phpbb-ext-akismet",
-   "version": "1.0.6",
-   "time": "2017-09-21",
-   "license": "GPL-2.0",
-   "authors": [{
-      "name": "Matt Gibson",
-      "email": "matt@mattgibsoncreative.co.uk",
-      "homepage": "http://mattgibsoncreative.co.uk",
-      "role": "Lead Developer"
-   }],
-   "repositories": [
-      {
-         "type": "vcs",
-         "url": "https://github.com/gothick/php-akismet"
-      }
-   ],
-   "require": {
-      "php": ">=5.6",
-      "composer/installers": "~1.0",
-      "gothick/php-akismet": "dev-master"
-   },
-   "require-dev": {
-   },
-   "extra": {
-      "display-name": "Akismet Anti-Spam Extension",
-      "soft-require" : {
-         "phpbb/phpbb": "~3.2"
-      }
-   }
+	"name": "phpbb/akismet",
+	"type": "phpbb-extension",
+	"description": "Akismet Anti-Spam Extension for phpBB",
+	"homepage": "https://www.phpbb.com",
+	"version": "1.0.0-dev",
+	"license": "GPL-2.0-only",
+	"authors": [
+		{
+			"name": "Matt Friedman",
+			"homepage": "http://mattfriedman.me",
+			"role": "Extensions Development Team Lead"
+		},
+		{
+			"name": "Jakub Senko",
+			"email": "jakubsenko@gmail.com",
+			"role": "Extension Developer"
+		},
+		{
+			"name": "Matt Gibson",
+			"email": "matt@mattgibsoncreative.co.uk",
+			"homepage": "http://mattgibsoncreative.co.uk",
+			"role": "Original extension author and developer"
+		}
+	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/gothick/php-akismet"
+		}
+	],
+	"require": {
+		"php": ">=5.6",
+		"composer/installers": "~1.0",
+		"gothick/php-akismet": "dev-master"
+	},
+	"require-dev": {
+		"phing/phing": "2.4.*"
+	},
+	"extra": {
+		"display-name": "Akismet Anti-Spam Extension",
+		"soft-require": {
+			"phpbb/phpbb": "~3.2"
+		}
+	}
 }
