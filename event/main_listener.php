@@ -109,17 +109,7 @@ class main_listener implements EventSubscriberInterface
 				$data['phpbb_akismet_unapproved'] = true;
 				$event['data'] = $data;
 
-				// Note our action in the moderation log
-				if ($event['mode'] === 'post' || ($event['mode'] === 'edit' && $data['topic_first_post_id'] == $data['post_id']))
-				{
-					$log_message = 'AKISMET_LOG_TOPIC_DISAPPROVED';
-				}
-				else
-				{
-					$log_message = 'AKISMET_LOG_POST_DISAPPROVED';
-				}
-
-				$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $log_message, false, array($data['topic_title'], $this->user->data['username']));
+				$this->log_mark_post_spam($event['mode'], $data);
 			}
 		}
 	}
@@ -143,28 +133,11 @@ class main_listener implements EventSubscriberInterface
 				'comment_author_email'	=> $user_row['user_email'],
 			];
 
-			$is_spam = false;
-			$is_blatant_spam = false;
+			$result = $this->akismet_comment_check($user_id, $params);
 
-			try
+			if ($result['is_spam'])
 			{
-				$result = $this->akismet_comment_check($user_id, $params);
-				if ($result)
-				{
-					$is_spam = $result->isSpam();
-					$is_blatant_spam = $result->isBlatantSpam();
-				}
-			}
-			catch (\Exception $e)
-			{
-				// akismet_comment_check will have quietly logged an error. All we want
-				// to do is quietly pass registrations through okay on any kind of
-				// general failure.
-			}
-
-			if ($is_spam)
-			{
-				$log_message = $is_blatant_spam ? 'AKISMET_LOG_BLATANT_SPAMMER_REGISTRATION' : 'AKISMET_LOG_SPAMMER_REGISTRATION';
+				$log_message = $result['is_blatant_spam'] ? 'AKISMET_LOG_BLATANT_SPAMMER_REGISTRATION' : 'AKISMET_LOG_SPAMMER_REGISTRATION';
 				$this->log->add('mod', $user_id, $this->user->ip, $log_message, false, array($user_row['username']));
 
 				if ($group_id = $this->config['phpbb_akismet_add_registering_spammers_to_group'])
@@ -172,7 +145,7 @@ class main_listener implements EventSubscriberInterface
 					$this->group_user_add($group_id, $user_id);
 				}
 
-				if ($is_blatant_spam && $group_id = $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
+				if ($result['is_blatant_spam'] && $group_id = $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
 				{
 					$this->group_user_add($group_id, $user_id);
 				}
@@ -206,8 +179,6 @@ class main_listener implements EventSubscriberInterface
 	 */
 	private function is_spam($data)
 	{
-		$is_spam = false;
-
 		// For URL of poster, i.e. poster's "website" profile field.
 		$this->user->get_profile_fields($this->user->data['user_id']);
 
@@ -226,28 +197,9 @@ class main_listener implements EventSubscriberInterface
 			'comment_type'			=> 'forum-post',
 		);
 
-		try
-		{
-			$result = $this->akismet_comment_check($this->user->data['user_id'], $params);
-			// We either get false back on unexpected failure, or a CommentCheckResult object. If we got
-			// false back, chances are good that we've already added the details to the phpBB error log,
-			// so here we just quietly ignore the problem.
-			if ($result instanceof \Gothick\AkismetClient\Result\CommentCheckResult)
-			{
-				// TODO: Also available from our result object is isBlatantSpam, indicating something
-				// so obviously spammy that it can be silently discarded without human intervention.
-				// Might want to do something more extreme with those.
-				$is_spam = $result->isSpam();
-			}
-		}
-		catch (\Exception $e)
-		{
-			// Our akismet_comment_check method will log problems to the phpBB error log. Here we just
-			// want silently to ignore any problems and not mark anything as spam, given that we can't
-			// tell whether it is or not.
-		}
+		$result = $this->akismet_comment_check($this->user->data['user_id'], $params);
 
-		return $is_spam;
+		return $result['is_spam'];
 	}
 
 	/**
@@ -256,8 +208,7 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * @param int $user_id User ID of the commenter (or newly-registered potential commenter)
 	 * @param array $params Akismet parameters
-	 * @throws \Exception
-	 * @return boolean|\Gothick\AkismetClient\Result\CommentCheckResult False on failure or a result oject otherwise.
+	 * @return boolean|array False on failure or a result array otherwise.
 	 */
 	protected function akismet_comment_check($user_id, $params)
 	{
@@ -333,15 +284,17 @@ class main_listener implements EventSubscriberInterface
 			}
 
 			$result = $akismet->commentCheck($params, $server);
+			return array(
+				'is_spam'			=> $result->isSpam(),
+				'is_blatant_spam'	=> $result->isBlatantSpam(),
+			);
 		}
 		catch (\Exception $e)
 		{
 			$this->log->add('critical', $user_id, $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
 
-			throw $e;
+			return false;
 		}
-
-		return $result;
 	}
 
 	/**
@@ -389,5 +342,26 @@ class main_listener implements EventSubscriberInterface
 	protected function log_disable_group_add($group_name)
 	{
 		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SPAMMER_GROUP_REMOVED', false, array($group_name));
+	}
+
+	/**
+	 * Log situation when post was marked spam by Akismet
+	 *
+	 * @param	string	$mode	Posting mode
+	 * @param	array	$data	Data submitted by the user
+	 * @return	void
+	 */
+	protected function log_mark_post_spam($mode, $data)
+	{
+		if ($mode === 'post' || ($mode === 'edit' && $data['topic_first_post_id'] == $data['post_id']))
+		{
+			$log_message = 'AKISMET_LOG_TOPIC_DISAPPROVED';
+		}
+		else
+		{
+			$log_message = 'AKISMET_LOG_POST_DISAPPROVED';
+		}
+
+		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $log_message, false, array($data['topic_title'], $this->user->data['username']));
 	}
 }

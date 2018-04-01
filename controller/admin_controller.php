@@ -97,8 +97,8 @@ class admin_controller
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SETTING_CHANGED');
 
 			trigger_error($this->language->lang('ACP_AKISMET_SETTING_SAVED') . adm_back_link($this->u_action));
-
 		}
+
 		$this->template->assign_vars(array(
 			'U_ACTION'				=> $this->u_action,
 			'API_KEY'				=> $this->config['phpbb_akismet_api_key'],
