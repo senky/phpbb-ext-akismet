@@ -29,7 +29,7 @@ class akismet_mock extends \Gothick\AkismetClient\Client
 	{
 		if ($params['comment_author'] == 'viagra-test-123')
 		{
-			return new akismet_client_check_result_mock(true, $blatant);
+			return new akismet_client_check_result_mock(true, $this->blatant);
 		}
 		return new akismet_client_check_result_mock(false, false);
 	}

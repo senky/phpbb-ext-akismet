@@ -66,7 +66,7 @@ class check_new_user_test extends main_listener_base
 				array(
 					'phpbb_akismet_check_registrations' => false, // Not configured to check registrations...
 					'phpbb_akismet_add_registering_spammers_to_group' => 234,
-					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 345
+					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 235
 				),
 				'viagra-test-123',
 				true,
@@ -79,7 +79,7 @@ class check_new_user_test extends main_listener_base
 				array(
 					'phpbb_akismet_check_registrations' => true,
 					'phpbb_akismet_add_registering_spammers_to_group' => 234,
-					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 345
+					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 235
 				),
 				'matt',
 				false,
@@ -92,13 +92,13 @@ class check_new_user_test extends main_listener_base
 				array(
 					'phpbb_akismet_check_registrations' => true,
 					'phpbb_akismet_add_registering_spammers_to_group' => 234,
-					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 345
+					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 235
 				),
 				'viagra-test-123',
 				true, // Blatant spammer
 				false, // Shouldn't pass the spammy test
-				false, // Should be added to the spammy group
-				false  // *and* to the the blatant spammers group
+				true, // Should be added to the spammy group
+				true  // *and* to the the blatant spammers group
 			),
 		);
 	}

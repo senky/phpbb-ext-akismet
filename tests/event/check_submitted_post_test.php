@@ -55,6 +55,11 @@ class check_submitted_post_test extends main_listener_base
 			$this->log->expects($this->once())
 				->method('add')
 				->with($this->equalTo('mod'));
+			
+			$this->request->expects($this->any())
+				->method('server')
+				->with($this->anything(), null)
+				->willReturn('');
 		}
 
 		// Event data
