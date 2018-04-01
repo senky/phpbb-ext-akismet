@@ -17,7 +17,9 @@ namespace phpbb\akismet\acp;
  */
 class akismet_module
 {
-	var $u_action;
+	public $page_title;
+	public $tpl_name;
+	public $u_action;
 
 	public function main ($id, $mode)
 	{

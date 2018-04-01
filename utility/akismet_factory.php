@@ -59,9 +59,7 @@ class akismet_factory
 			$this->log->add('critical', ANONYMOUS, $this->user->data['session_ip'], 'AKISMET_LOG_NO_KEY_CONFIGURED');
 			return false;
 		}
-		else
-		{
-			return new \Gothick\AkismetClient\Client(generate_board_url(), 'phpBB',  $this->config['version'], $this->akismet_api_key);
-		}
+
+		return new \Gothick\AkismetClient\Client(generate_board_url(), 'phpBB',  $this->config['version'], $this->akismet_api_key);
 	}
 }

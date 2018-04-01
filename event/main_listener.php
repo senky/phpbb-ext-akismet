@@ -52,13 +52,14 @@ class main_listener implements EventSubscriberInterface
 	 * Heavy lifting is done only if we actually need to run
 	 * Akismet.
 	 *
-	 * @param \phpbb\user $user
-	 * @param \phpbb\request\request $request
-	 * @param \phpbb\config\config $config
+	 * @param \phpbb\user              $user
+	 * @param \phpbb\request\request   $request
+	 * @param \phpbb\config\config     $config
 	 * @param \phpbb\log\log_interface $log
-	 * @param \phpbb\auth\auth $auth
-	 * @param string $php_ext
-	 * @param string $phpbb_root_path
+	 * @param \phpbb\auth\auth         $auth
+	 * @param ContainerInterface       $phpbb_container
+	 * @param string                   $php_ext
+	 * @param string                   $phpbb_root_path
 	 */
 	public function __construct(\phpbb\user $user, \phpbb\request\request $request, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\auth\auth $auth, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $php_ext, $phpbb_root_path)
 	{
@@ -72,7 +73,7 @@ class main_listener implements EventSubscriberInterface
 		$this->request = $request;
 	}
 
-	static public function getSubscribedEvents()
+	public static function getSubscribedEvents()
 	{
 		return array(
 			'core.posting_modify_submit_post_before'		=> 'check_submitted_post',
@@ -109,7 +110,7 @@ class main_listener implements EventSubscriberInterface
 				$event['data'] = $data;
 
 				// Note our action in the moderation log
-				if ($event['mode'] == 'post' || ($event['mode'] == 'edit' && $data['topic_first_post_id'] == $data['post_id']))
+				if ($event['mode'] === 'post' || ($event['mode'] === 'edit' && $data['topic_first_post_id'] == $data['post_id']))
 				{
 					$log_message = 'AKISMET_LOG_TOPIC_DISAPPROVED';
 				}
@@ -171,12 +172,9 @@ class main_listener implements EventSubscriberInterface
 					$this->group_user_add($group_id, $user_id);
 				}
 
-				if ($is_blatant_spam)
+				if ($is_blatant_spam && $group_id = $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
 				{
-					if ($group_id = $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
-					{
-						$this->group_user_add($group_id, $user_id);
-					}
+					$this->group_user_add($group_id, $user_id);
 				}
 			}
 		}
@@ -204,6 +202,7 @@ class main_listener implements EventSubscriberInterface
 	 * Check a comment for spam.
 	 *
 	 * @param array $data Data array from event that triggered us.
+	 * @return bool
 	 */
 	private function is_spam($data)
 	{
@@ -327,7 +326,7 @@ class main_listener implements EventSubscriberInterface
 			foreach ($server_vars as $var)
 			{
 				$value = $this->request->server($var, null);
-				if ($value != null)
+				if ($value !== null)
 				{
 					$server[$var] = $value;
 				}
@@ -355,7 +354,7 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function add_akismet_details_to_notification($event)
 	{
-		if ($event['notification_type_name'] == 'notification.type.post_in_queue' || $event['notification_type_name'] == 'notification.type.topic_in_queue')
+		if ($event['notification_type_name'] === 'notification.type.post_in_queue' || $event['notification_type_name'] === 'notification.type.topic_in_queue')
 		{
 			$data = $event['data'];
 			if (isset($data['phpbb_akismet_unapproved']))
