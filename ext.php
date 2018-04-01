@@ -11,17 +11,17 @@
 namespace phpbb\akismet;
 
 /**
-* Extension class for custom enable/disable/purge actions
-*
-* We need this because we're adding notification types. We
-* can't leave this to the migrations, as, for example, the
-* revert_data only runs when the admin chooses to delete the
-* extension data, not just when the extension is disabled.
-* If they simply disable the extension, we *must* ensure
-* that our custom notifications are purged/disabled, as
-* otherwise the board will continue trying to use them even
-* though their code is disabled.
-*/
+ * Extension class for custom enable/disable/purge actions
+ *
+ * We need this because we're adding notification types. We
+ * can't leave this to the migrations, as, for example, the
+ * revert_data only runs when the admin chooses to delete the
+ * extension data, not just when the extension is disabled.
+ * If they simply disable the extension, we *must* ensure
+ * that our custom notifications are purged/disabled, as
+ * otherwise the board will continue trying to use them even
+ * though their code is disabled.
+ */
 class ext extends \phpbb\extension\base
 {
 	protected static $notification_types = array(
@@ -30,12 +30,12 @@ class ext extends \phpbb\extension\base
 	);
 
 	/**
-	* Enable our notifications.
-	*
-	* @param mixed $old_state State returned by previous call of this method
-	* @return mixed Returns false after last step, otherwise temporary state
-	* @access public
-	*/
+	 * Enable our notifications.
+	 *
+	 * @param mixed $old_state State returned by previous call of this method
+	 * @return mixed Returns false after last step, otherwise temporary state
+	 * @access public
+	 */
 	public function enable_step($old_state)
 	{
 		switch ($old_state)
@@ -57,12 +57,12 @@ class ext extends \phpbb\extension\base
 	}
 
 	/**
-	* Disable our notifications.
-	*
-	* @param mixed $old_state State returned by previous call of this method
-	* @return mixed Returns false after last step, otherwise temporary state
-	* @access public
-	*/
+	 * Disable our notifications.
+	 *
+	 * @param mixed $old_state State returned by previous call of this method
+	 * @return mixed Returns false after last step, otherwise temporary state
+	 * @access public
+	 */
 	public function disable_step($old_state)
 	{
 		switch ($old_state)
@@ -84,12 +84,12 @@ class ext extends \phpbb\extension\base
 	}
 
 	/**
-	* Purge our notifications
-	*
-	* @param mixed $old_state State returned by previous call of this method
-	* @return mixed Returns false after last step, otherwise temporary state
-	* @access public
-	*/
+	 * Purge our notifications
+	 *
+	 * @param mixed $old_state State returned by previous call of this method
+	 * @return mixed Returns false after last step, otherwise temporary state
+	 * @access public
+	 */
 	public function purge_step($old_state)
 	{
 		switch ($old_state)

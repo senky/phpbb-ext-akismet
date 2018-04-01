@@ -79,8 +79,8 @@ class admin_controller
 	}
 
 	/**
-	* Akismet settings
-	*/
+	 * Akismet settings
+	 */
 	public function display_settings()
 	{
 		add_form_key(self::FORM_KEY);
@@ -130,8 +130,8 @@ class admin_controller
 	}
 
 	/**
-	* Save settings back to the DB
-	*/
+	 * Save settings back to the DB
+	 */
 	protected function save_settings()
 	{
 		$this->config->set('phpbb_akismet_api_key', $this->request->variable('api_key', ''));
@@ -140,10 +140,10 @@ class admin_controller
 		$this->config->set('phpbb_akismet_add_registering_blatant_spammers_to_group', $this->request->variable('add_registering_blatant_spammers_to_group', 0));
 	}
 	/**
-	* Set action
-	*
-	* @param string $u_action Action
-	*/
+	 * Set action
+	 *
+	 * @param string $u_action Action
+	 */
 	public function set_action($u_action)
 	{
 		$this->u_action = $u_action;
