@@ -48,6 +48,9 @@ class admin_controller
 	/** @var string */
 	protected $phpbb_root_path;
 
+	/** @var string */
+	protected $groups_table;
+
 	const FORM_KEY = 'phpbb/akismet';
 
 	/**
@@ -63,8 +66,9 @@ class admin_controller
 	 * @param \phpbb\db\driver\driver_interface $db           Database drive
 	 * @param string                            $php_ext
 	 * @param string                            $phpbb_root_path
+	 * @param string							$groups_table
 	 */
-	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\log\log_interface $log, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\group\helper $group_helper, \phpbb\db\driver\driver_interface $db, $php_ext, $phpbb_root_path)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\log\log_interface $log, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\group\helper $group_helper, \phpbb\db\driver\driver_interface $db, $php_ext, $phpbb_root_path, $groups_table)
 	{
 		$this->request = $request;
 		$this->template = $template;
@@ -76,6 +80,7 @@ class admin_controller
 		$this->db = $db;
 		$this->php_ext = $php_ext;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->groups_table = $groups_table;
 	}
 
 	/**
@@ -113,7 +118,7 @@ class admin_controller
 		// Adapted from global function group_select_options in core file functions_admin.php and adapted.
 
 		$sql = 'SELECT group_id, group_type, group_name
-				FROM ' . GROUPS_TABLE . '
+				FROM ' . $this->groups_table . '
 				WHERE (group_type <> ' . GROUP_SPECIAL . " OR group_name = 'NEWLY_REGISTERED') " ;
 		$result = $this->db->sql_query($sql);
 

@@ -26,6 +26,7 @@ services:
             - '@dbal.conn'
             - '%core.php_ext%'
             - '%core.root_path%'
+            - '%tables.groups%'
 
     phpbb.akismet.client.factory:
         class: phpbb\akismet\utility\akismet_factory
