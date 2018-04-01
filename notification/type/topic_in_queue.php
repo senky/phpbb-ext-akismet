@@ -12,6 +12,9 @@ namespace phpbb\akismet\notification\type;
 
 class topic_in_queue extends \phpbb\notification\type\topic_in_queue
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function get_type()
 	{
 		return 'phpbb.akismet.notification.type.topic_in_queue';

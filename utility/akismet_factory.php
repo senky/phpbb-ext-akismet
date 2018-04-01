@@ -18,16 +18,16 @@ namespace phpbb\akismet\utility;
  */
 class akismet_factory
 {
-
-	/* @var \phpbb\config\config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/* @var \phpbb\log\log_interface */
+	/** @var \phpbb\log\log_interface */
 	protected $log;
 
-	/* @var \phpbb\user */
+	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var string */
 	protected $akismet_api_key;
 
 	/**
@@ -53,6 +53,11 @@ class akismet_factory
 		}
 	}
 
+	/**
+	 * Initialize Akismet client with board-specific data
+	 *
+	 * @return	boolean|\Gothick\AkismetClient\Client	False if Akismet key is empty; Akismet client otherwise
+	 */
 	public function createAkismet()
 	{
 		if (empty($this->akismet_api_key))
