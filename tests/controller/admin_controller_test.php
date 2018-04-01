@@ -8,16 +8,11 @@
  *
  */
 
-/**
- * Override form_key global functions with ones that depend on a simple flag
- * we can set in our test class. Note we have to change namespaces so the functions
- * end up in the controller's namespace.
- */
 namespace phpbb\akismet\controller
 {
 	function check_form_key($dummy)
 	{
-		return \phpbb\akismet\tests\controller\main_controller_test::$check_form_key_result;
+		return \phpbb\akismet\tests\controller\admin_controller_test::$check_form_key_result;
 	}
 
 	function add_form_key($dummy)
@@ -30,35 +25,50 @@ namespace phpbb\akismet\controller
 	}
 }
 
-/**
- * Basic tests of the Admin Controller
- */
 namespace phpbb\akismet\tests\controller
 {
-	use \phpbb\akismet\controller\admin_controller;
-
-	class main_controller_test extends \phpbb_test_case
+	class admin_controller_test extends \phpbb_test_case
 	{
 		public static $check_form_key_result = false;
 
 		/** @var \phpbb\request\request|\PHPUnit_Framework_MockObject_MockObject */
 		protected $request;
+
 		/** @var \phpbb\template\template|\PHPUnit_Framework_MockObject_MockObject */
 		protected $template;
+
 		/** @var \phpbb\log\log_interface|\PHPUnit_Framework_MockObject_MockObject */
 		protected $log;
+
 		/** @var \phpbb\config\config|\PHPUnit_Framework_MockObject_MockObject */
 		protected $config;
+
 		/** @var \phpbb\language\language|\PHPUnit_Framework_MockObject_MockObject */
 		protected $language;
+
 		/** @var \phpbb\user|\PHPUnit_Framework_MockObject_MockObject */
 		protected $user;
+
 		/** @var \phpbb\group\helper|\PHPUnit_Framework_MockObject_MockObject */
 		protected $group_helper;
+
+		/** @var string */
+		protected $php_ext;
+
+		/** @var string */
+		protected $root_path;
+
+		/** @var string */
+		protected $groups_table;
+
+		/** @var string */
+		protected $u_action;
 
 		public function setUp()
 		{
 			global $phpbb_root_path, $phpEx;
+
+			parent::setUp();
 
 			$this->request = $this->getMockBuilder(\phpbb\request\request::class)->getMock();
 			$this->template = $this->getMockBuilder(\phpbb\template\template::class)->getMock();
@@ -69,14 +79,16 @@ namespace phpbb\akismet\tests\controller
 			$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 			$this->group_helper = $this->getMockBuilder(\phpbb\group\helper::class)->disableOriginalConstructor()->getMock();
 			$this->db = $this->getMockBuilder(\phpbb\db\driver\driver_interface::class)->getMock();
+			$this->php_ext = $phpEx;
+			$this->root_path = $phpbb_root_path;
+			$this->groups_table = 'phpbb_groups';
+
+			$this->u_action = $phpbb_root_path . 'adm/index.php?i=-phpbb-akismet-acp-akismet_module&mode=settings';;
 		}
 
 		public function get_controller()
 		{
-			global $phpbb_root_path, $phpEx;
-
-			$controller = new \phpbb\akismet\controller\admin_controller
-			(
+			$controller = new \phpbb\akismet\controller\admin_controller(
 				$this->request,
 				$this->template,
 				$this->user,
@@ -85,10 +97,12 @@ namespace phpbb\akismet\tests\controller
 				$this->language,
 				$this->group_helper,
 				$this->db,
-				$phpEx,
-				$phpbb_root_path,
-				'phpbb_groups'
+				$this->php_ext,
+				$this->root_path,
+				$this->groups_table
 			);
+			$controller->set_action($this->u_action);
+
 			return $controller;
 		}
 
@@ -97,26 +111,7 @@ namespace phpbb\akismet\tests\controller
 		 */
 		public function test_construct()
 		{
-			$controller = $this->get_controller();
-			$this->assertInstanceOf(admin_controller::class, $controller);
-		}
-
-		/**
-		 * Make sure we log the change of settings to the admin log.
-		 */
-		public function test_save_settings_logged()
-		{
-			self::$check_form_key_result = true;
-			$this->setExpectedTriggerError(E_USER_NOTICE, 'ACP_AKISMET_SETTING_SAVED');
-			$this->request->method('is_set_post')->with('submit')->willReturn('submit');
-
-			$this->log->expects($this->once())
-				->method('add')
-				->with($this->equalTo('admin'));
-
-			$controller = $this->get_controller();
-
-			$controller->display_settings();
+			$this->assertInstanceOf(\phpbb\akismet\controller\admin_controller::class, $this->get_controller());
 		}
 
 		/**
@@ -124,12 +119,36 @@ namespace phpbb\akismet\tests\controller
 		 */
 		public function test_invalid_form_key()
 		{
+			$controller = $this->get_controller();
 			self::$check_form_key_result = false;
-			$this->setExpectedTriggerError(E_USER_NOTICE, 'FORM_INVALID');
+
 			$this->request->method('is_set_post')
 				->with('submit')
 				->willReturn('submit');
+			
+			$this->setExpectedTriggerError(E_USER_NOTICE, 'FORM_INVALID');
+			
+			$controller->display_settings();
+		}
+
+		/**
+		 * Make sure we log the change of settings to the admin log.
+		 */
+		public function test_save_settings_logged()
+		{
 			$controller = $this->get_controller();
+			self::$check_form_key_result = true;
+
+			$this->request->method('is_set_post')
+				->with('submit')
+				->willReturn('submit');
+
+			$this->log->expects($this->once())
+				->method('add')
+				->with($this->equalTo('admin'));
+			
+			$this->setExpectedTriggerError(E_USER_NOTICE, 'ACP_AKISMET_SETTING_SAVED');
+
 			$controller->display_settings();
 		}
 
@@ -138,11 +157,14 @@ namespace phpbb\akismet\tests\controller
 		 */
 		public function test_assign_vars()
 		{
+			$controller = $this->get_controller();
+
 			$this->config['phpbb_akismet_api_key'] = 'IM_AN_API_KEY_HONEST_GUV_123';
 			$this->config['phpbb_akismet_check_registrations'] = 1;
 			$this->config['phpbb_akismet_add_registering_spammers_to_group'] = 2;
 			$this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'] = 3;
-			$this->db->expects($this->any())
+
+			$this->db->expects($this->exactly(8))
 				->method('sql_fetchrow')
 				->will($this->onConsecutiveCalls(
 					array(
@@ -185,11 +207,10 @@ namespace phpbb\akismet\tests\controller
 					false // End of rows
 				));
 
-			$this->template
-				->expects($this->once())
+			$this->template->expects($this->once())
 				->method('assign_vars')
 				->with($this->callback(function($vars) {
-					if ($vars['U_ACTION'] != 'index_test.php')
+					if ($vars['U_ACTION'] != $this->u_action)
 					{
 						return false;
 					}
@@ -216,8 +237,6 @@ namespace phpbb\akismet\tests\controller
 			$this->group_helper->method('get_name')
 				->will($this->returnArgument(0));
 
-			$controller = $this->get_controller();
-			$controller->set_action('index_test.php');
 			$controller->display_settings();
 		}
 	}
