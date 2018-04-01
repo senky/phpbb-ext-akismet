@@ -1,10 +1,10 @@
 <?php
 /**
- * Basic admin controller tests
  *
- * @package phpBB Extension - Gothick Akismet
- * @copyright (c) 2017 Matt Gibson Creative Ltd.
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ * Akismet. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2018 phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
 
