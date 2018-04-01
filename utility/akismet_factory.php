@@ -60,6 +60,6 @@ class akismet_factory
 			return false;
 		}
 
-		return new \Gothick\AkismetClient\Client(generate_board_url(), 'phpBB',  $this->config['version'], $this->akismet_api_key);
+		return new \Gothick\AkismetClient\Client(generate_board_url(), 'phpBB', $this->config['version'], $this->akismet_api_key);
 	}
 }
