@@ -60,7 +60,7 @@ class main_listener implements EventSubscriberInterface
 	 * @param string                   $php_ext
 	 * @param string                   $phpbb_root_path
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\request\request $request, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\auth\auth $auth, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $php_ext, $phpbb_root_path)
+	public function __construct(\phpbb\user $user, \phpbb\request\request $request, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\auth\auth $auth, ContainerInterface $phpbb_container, $php_ext, $phpbb_root_path)
 	{
 		$this->user = $user;
 		$this->config = $config;
@@ -263,7 +263,7 @@ class main_listener implements EventSubscriberInterface
 		try
 		{
 			/** @var \Gothick\AkismetClient\Client */
-			$akismet = $this->phpbb_container->get('phpbb.akismet.client', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE);
+			$akismet = $this->phpbb_container->get('phpbb.akismet.client');
 			// TODO: Use AKISMET_LOG_NO_KEY_CONFIGURED later, when we've changed things so we can do key validation.
 
 			// We can't just pass $_SERVER in to our Akismet client as phpBB turns off super globals (which is,

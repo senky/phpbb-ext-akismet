@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_user_group">
+		<column>user_id</column>
+		<column>group_id</column>
+		<column>group_leader</column>
+		<column>user_pending</column>
+		<row>
+			<value>123</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>124</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>125</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>126</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>127</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>128</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>129</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+	</table>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>group_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_regdate</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<column>user_birthday</column>
+		<row>
+			<value>123</value>
+			<value>1</value>
+			<value>user 123</value>
+			<value>user 123</value>
+			<value>1419572010</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>124</value>
+			<value>1</value>
+			<value>user 124</value>
+			<value>user 124</value>
+			<value>1419572010</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>125</value>
+			<value>1</value>
+			<value>user 125</value>
+			<value>user 125</value>
+			<value>1419572010</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>126</value>
+			<value>1</value>
+			<value>user 126</value>
+			<value>user 126</value>
+			<value>1419572010</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>127</value>
+			<value>1</value>
+			<value>user 127</value>
+			<value>user 127</value>
+			<value>1419572010</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>128</value>
+			<value>1</value>
+			<value>user 128</value>
+			<value>user 128</value>
+			<value>1419572010</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>129</value>
+			<value>1</value>
+			<value>user 129</value>
+			<value>user 129</value>
+			<value>1419572010</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_groups">
+		<column>group_id</column>
+		<column>group_type</column>
+		<column>group_name</column>
+		<column>group_desc</column>
+		<row>
+			<value>1</value>
+			<value>3</value>
+			<value>REGISTERED</value>
+			<value></value>
+		</row>
+		<row>
+			<value>234</value>
+			<value>2</value>
+			<value>Spammers</value>
+			<value></value>
+		</row>
+		<row>
+			<value>235</value>
+			<value>2</value>
+			<value>Blatant spammers</value>
+			<value></value>
+		</row>
+	</table>
+</dataset>
