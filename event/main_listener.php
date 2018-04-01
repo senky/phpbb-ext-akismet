@@ -94,23 +94,24 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function check_submitted_post($event)
 	{
-		// Skip the Akismet check for anyone who's a moderator or an administrator. If your
-		// admins and moderators are posting spam, you've got bigger problems...
-		if (!($this->auth->acl_getf_global('m_') || $this->auth->acl_getf_global('a_')))
+		// Skip the Akismet check for anyone who's a moderator or an administrator.
+		if ($this->auth->acl_getf_global('m_') || $this->auth->acl_getf_global('a_'))
 		{
-			$data = $event['data'];
-			if ($this->is_spam($data))
-			{
-				// Whatever the post status was before, this will override it
-				// and mark it as unapproved.
-				$data['force_approved_state'] = ITEM_UNAPPROVED;
-				// This will be used by our notification event listener to
-				// figure out that the post was moderated by Akismet.
-				$data['phpbb_akismet_unapproved'] = true;
-				$event['data'] = $data;
+			return;
+		}
 
-				$this->log_mark_post_spam($event['mode'], $data);
-			}
+		$data = $event['data'];
+		if ($this->is_spam($data))
+		{
+			// Whatever the post status was before, this will override it
+			// and mark it as unapproved.
+			$data['force_approved_state'] = ITEM_UNAPPROVED;
+			// This will be used by our notification event listener to
+			// figure out that the post was moderated by Akismet.
+			$data['phpbb_akismet_unapproved'] = true;
+			$event['data'] = $data;
+
+			$this->log_mark_post_spam($event['mode'], $data);
 		}
 	}
 
@@ -177,7 +178,7 @@ class main_listener implements EventSubscriberInterface
 	 * @param array $data Data array from event that triggered us.
 	 * @return bool
 	 */
-	private function is_spam($data)
+	protected function is_spam($data)
 	{
 		// For URL of poster, i.e. poster's "website" profile field.
 		$this->user->get_profile_fields($this->user->data['user_id']);
@@ -208,10 +209,15 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * @param int $user_id User ID of the commenter (or newly-registered potential commenter)
 	 * @param array $params Akismet parameters
-	 * @return boolean|array False on failure or a result array otherwise.
+	 * @return array Result array
 	 */
 	protected function akismet_comment_check($user_id, $params)
 	{
+		$result = array(
+			'is_spam'			=> false,
+			'is_blatant_spam'	=> false,
+		);
+
 		try
 		{
 			/** @var \Gothick\AkismetClient\Client */
@@ -283,18 +289,16 @@ class main_listener implements EventSubscriberInterface
 				}
 			}
 
-			$result = $akismet->commentCheck($params, $server);
-			return array(
-				'is_spam'			=> $result->isSpam(),
-				'is_blatant_spam'	=> $result->isBlatantSpam(),
-			);
+			$check = $akismet->commentCheck($params, $server);
+			$result['is_spam'] = $check->isSpam();
+			$result['is_blatant_spam'] = $check->isBlatantSpam();
 		}
 		catch (\Exception $e)
 		{
 			$this->log->add('critical', $user_id, $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
-
-			return false;
 		}
+
+		return $result;
 	}
 
 	/**
