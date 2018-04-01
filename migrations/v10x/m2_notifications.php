@@ -7,20 +7,39 @@
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
-namespace phpbb\akismet\migrations;
+namespace phpbb\akismet\migrations\v10x;
 
-class release_1_0_1 extends \phpbb\db\migration\migration
+class m2_notifications extends \phpbb\db\migration\migration
 {
 	protected static $notification_types = array(
-			'gothick.akismet.notification.type.post_in_queue',
-			'gothick.akismet.notification.type.topic_in_queue',
+			'phpbb.akismet.notification.type.post_in_queue',
+			'phpbb.akismet.notification.type.topic_in_queue',
 	);
 
-	static public function depends_on()
+	/**
+	 * {@inheritDoc}
+	 */
+	public function effectively_installed()
 	{
-		return array('\phpbb\akismet\migrations\release_1_0_0');
+		$sql = 'SELECT * FROM ' . $this->table_prefix . "notification_types
+			WHERE notification_type_name = 'phpbb.akismet.notification.type.post_in_queue'";
+		$result = $this->db->sql_query_limit($sql, 1);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+		return $row !== false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	static public function depends_on()
+	{
+		return array('\phpbb\akismet\migrations\v10x\m1_acp_module');
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function update_data()
 	{
 		return array(
@@ -28,6 +47,9 @@ class release_1_0_1 extends \phpbb\db\migration\migration
 		);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function revert_data()
 	{
 		return array(
@@ -35,6 +57,9 @@ class release_1_0_1 extends \phpbb\db\migration\migration
 		);
 	}
 
+	/**
+	 * Add new notification types
+	 */
 	public function add_notification_types()
 	{
 		foreach (self::$notification_types as $type)
@@ -48,6 +73,9 @@ class release_1_0_1 extends \phpbb\db\migration\migration
 		}
 	}
 
+	/**
+	 * Remove notification types
+	 */
 	public function remove_notification_types()
 	{
 		$sql = 'DELETE FROM ' . NOTIFICATION_TYPES_TABLE . '
