@@ -214,7 +214,6 @@ class main_listener implements EventSubscriberInterface
 		// Akismet fields
 		$params = array(
 			'user_ip'				=> $this->user->ip,
-			// TODO: Check this is sending the right thing; we need the user's full User-Agent string
 			'user_agent'			=> $this->user->browser,
 			'comment_content'		=> $data['message'],
 			'comment_author_email'	=> $this->user->data['user_email'],
