@@ -86,7 +86,8 @@ namespace phpbb\akismet\tests\controller
 				$this->group_helper,
 				$this->db,
 				$phpEx,
-				$phpbb_root_path
+				$phpbb_root_path,
+				'phpbb_groups'
 			);
 			return $controller;
 		}
