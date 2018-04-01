@@ -21,7 +21,6 @@ class user extends \phpbb\user
 	public function __construct($username)
 	{
 		$this->data['username'] = $username;
-		$this->data['username_clean'] = $username;
 	}
 
 	public function lang()

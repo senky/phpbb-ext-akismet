@@ -219,7 +219,7 @@ class main_listener implements EventSubscriberInterface
 			'user_agent'			=> $this->user->browser,
 			'comment_content'		=> $data['message'],
 			'comment_author_email'	=> $this->user->data['user_email'],
-			'comment_author'		=> $this->user->data['username_clean'],
+			'comment_author'		=> $this->user->data['username'],
 			'comment_author_url'	=> isset($this->user->profile_fields['pf_phpbb_website']) ? $this->user->profile_fields['pf_phpbb_website'] : '',
 			'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "t={$data['topic_id']}", true, ''),
 			// 'forum-post' recommended for type:
