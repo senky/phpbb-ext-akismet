@@ -11,6 +11,7 @@ namespace phpbb\akismet\migrations\v10x;
 
 class m2_notifications extends \phpbb\db\migration\migration
 {
+	/** @var array New post types */
 	protected static $notification_types = array(
 			'phpbb.akismet.notification.type.post_in_queue',
 			'phpbb.akismet.notification.type.topic_in_queue',

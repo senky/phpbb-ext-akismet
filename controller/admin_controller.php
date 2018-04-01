@@ -113,6 +113,12 @@ class admin_controller
 		));
 	}
 
+	/**
+	 * Generate list of groups for selection
+	 *
+	 * @param	integer	$selected_group_id	Group ID to mark as selected
+	 * @return	string	List of groups in HTML format
+	 */
 	protected function group_select_options($selected_group_id = 0)
 	{
 		// Adapted from global function group_select_options in core file functions_admin.php and adapted.
@@ -147,7 +153,7 @@ class admin_controller
 	/**
 	 * Set action
 	 *
-	 * @param string $u_action Action
+	 * @param	string	$u_action	Action
 	 */
 	public function set_action($u_action)
 	{

@@ -21,37 +21,35 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class main_listener implements EventSubscriberInterface
 {
-	/* @var \phpbb\user */
+	/** @var \phpbb\user */
 	protected $user;
 
-	/* @var \phpbb\request\request */
+	/** @var \phpbb\request\request */
 	protected $request;
 
-	/* @var \phpbb\config\config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/* @var \phpbb\log\log_interface */
+	/** @var \phpbb\log\log_interface */
 	protected $log;
 
-	/* @var \phpbb\auth\auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/* @var \Symfony\Component\DependencyInjection\ContainerInterface */
+	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
 	protected $phpbb_container;
 
-	/* @var \messenger */
+	/** @var \messenger */
 	protected $messenger;
 
+	/** @var string */
 	protected $php_ext;
 
+	/** @var string */
 	protected $phpbb_root_path;
 
 	/**
 	 * Constructor
-	 *
-	 * Lightweight initialisation of the API key and user ID.
-	 * Heavy lifting is done only if we actually need to run
-	 * Akismet.
 	 *
 	 * @param \phpbb\user              $user
 	 * @param \phpbb\request\request   $request
@@ -74,6 +72,9 @@ class main_listener implements EventSubscriberInterface
 		$this->request = $request;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public static function getSubscribedEvents()
 	{
 		return array(
@@ -182,9 +183,7 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Separated out so we can mock this global function more easily in our unit testing.
-	 *
-	 * @codeCoverageIgnore Because we can't run this in testing (that's why we're mocking it) and it's trivial
+	 * Add user to group. Load phpBB function when needed.
 	 *
 	 * @param int $group_id
 	 * @param int $user_id
@@ -387,6 +386,12 @@ class main_listener implements EventSubscriberInterface
 		}
 	}
 
+	/**
+	 * Log situation when we stop adding new potential spammers to designated group
+	 * because it was removed.
+	 *
+	 * @param	string	$group_name	Group name
+	 */
 	protected function log_disable_group_add($group_name)
 	{
 		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SPAMMER_GROUP_REMOVED', false, array($group_name));
