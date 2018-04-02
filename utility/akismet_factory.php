@@ -56,7 +56,8 @@ class akismet_factory
 	/**
 	 * Initialize Akismet client with board-specific data
 	 *
-	 * @return	boolean|\Gothick\AkismetClient\Client	False if Akismet key is empty; Akismet client otherwise
+	 * @return boolean|\Gothick\AkismetClient\Client	False if Akismet key is empty; Akismet client otherwise
+	 * @throws \Gothick\AkismetClient\AkismetException
 	 */
 	public function createAkismet()
 	{

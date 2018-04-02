@@ -34,12 +34,10 @@
 				<label for="add_registering_spammers_to_group">{{ lang('ACP_AKISMET_ADD_DETECTED_SPAMMERS_TO_GROUP') ~ lang('COLON') }}</label><br/><span>{{ lang('ACP_AKISMET_ADD_DETECTED_SPAMMERS_TO_GROUP_EXPLAIN') }}</span>
 			</dt>
 			<dd>
-				<dd>
-					<select name="add_registering_spammers_to_group" id="add_registering_spammers_to_group">
-						<option value="0">{{ lang('ACP_AKISMET_DONT_ADD_REGISTERING_SPAMMERS_TO_GROUP') }}</option>
-						{{ S_GROUP_LIST }}
-					</select>
-				</dd>
+				<select name="add_registering_spammers_to_group" id="add_registering_spammers_to_group">
+					<option value="0">{{ lang('ACP_AKISMET_DONT_ADD_REGISTERING_SPAMMERS_TO_GROUP') }}</option>
+					{{ S_GROUP_LIST }}
+				</select>
 			</dd>
 		</dl>
 		<dl>
@@ -47,12 +45,10 @@
 				<label for="add_registering_blatant_spammers_to_group">{{ lang('ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP') ~ lang('COLON') }}</label><br/><span>{{ lang('ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP_EXPLAIN') }}</span>
 			</dt>
 			<dd>
-				<dd>
-					<select name="add_registering_blatant_spammers_to_group" id="add_registering_blatant_spammers_to_group">
-						<option value="0">{{ lang('ACP_AKISMET_DONT_ADD_REGISTERING_BLATANT_SPAMMERS_TO_GROUP') }}</option>
-						{{ S_GROUP_LIST_BLATANT }}
-					</select>
-				</dd>
+				<select name="add_registering_blatant_spammers_to_group" id="add_registering_blatant_spammers_to_group">
+					<option value="0">{{ lang('ACP_AKISMET_DONT_ADD_REGISTERING_BLATANT_SPAMMERS_TO_GROUP') }}</option>
+					{{ S_GROUP_LIST_BLATANT }}
+				</select>
 			</dd>
 		</dl>
 	</fieldset>
