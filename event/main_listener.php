@@ -219,7 +219,7 @@ class main_listener implements EventSubscriberInterface
 
 		try
 		{
-			/** @var \Gothick\AkismetClient\Client */
+			/** @var \Gothick\AkismetClient\Client $akismet */
 			$akismet = $this->phpbb_container->get('phpbb.akismet.client');
 			// TODO: Use AKISMET_LOG_NO_KEY_CONFIGURED later, when we've changed things so we can do key validation.
 
