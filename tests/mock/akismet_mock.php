@@ -19,10 +19,12 @@ namespace phpbb\akismet\tests\mock;
 class akismet_mock extends \Gothick\AkismetClient\Client
 {
 	protected $blatant;
+	protected $keyVerified;
 
-	public function __construct($blatant = false)
+	public function __construct($blatant = false, $keyVerified = false)
 	{
 		$this->blatant = $blatant;
+		$this->keyVerified = $keyVerified;
 	}
 
 	public function commentCheck($params = array(), $server_params = array())
@@ -32,5 +34,10 @@ class akismet_mock extends \Gothick\AkismetClient\Client
 			return new akismet_client_check_result_mock(true, $this->blatant);
 		}
 		return new akismet_client_check_result_mock(false, false);
+	}
+
+	public function verifyKey($api_key = null, $params = array())
+	{
+		return new akismet_client_verify_key_result_mock($this->keyVerified);
 	}
 }

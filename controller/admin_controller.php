@@ -10,6 +10,8 @@
 
 namespace phpbb\akismet\controller;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
 * Admin controller
 */
@@ -42,6 +44,9 @@ class admin_controller
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
+	protected $phpbb_container;
+
 	/** @var string */
 	protected $php_ext;
 
@@ -56,19 +61,20 @@ class admin_controller
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\request\request            $request      Request object
-	 * @param \phpbb\template\template          $template     Template object
-	 * @param \phpbb\user                       $user         User object
-	 * @param \phpbb\log\log_interface          $log          Log object
-	 * @param \phpbb\config\config              $config       Config object
-	 * @param \phpbb\language\language          $language     Language object
-	 * @param \phpbb\group\helper               $group_helper Group helper object
-	 * @param \phpbb\db\driver\driver_interface $db           Database drive
+	 * @param \phpbb\request\request            $request      		Request object
+	 * @param \phpbb\template\template          $template     		Template object
+	 * @param \phpbb\user                       $user         		User object
+	 * @param \phpbb\log\log_interface          $log          		Log object
+	 * @param \phpbb\config\config              $config       		Config object
+	 * @param \phpbb\language\language          $language     		Language object
+	 * @param \phpbb\group\helper               $group_helper 		Group helper object
+	 * @param \phpbb\db\driver\driver_interface $db           		Database drive
+	 * @param ContainerInterface       		    $phpbb_container	phpBB Service Container
 	 * @param string                            $php_ext
 	 * @param string                            $phpbb_root_path
 	 * @param string							$groups_table
 	 */
-	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\log\log_interface $log, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\group\helper $group_helper, \phpbb\db\driver\driver_interface $db, $php_ext, $phpbb_root_path, $groups_table)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\log\log_interface $log, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\group\helper $group_helper, \phpbb\db\driver\driver_interface $db, ContainerInterface $phpbb_container, $php_ext, $phpbb_root_path, $groups_table)
 	{
 		$this->request = $request;
 		$this->template = $template;
@@ -78,6 +84,7 @@ class admin_controller
 		$this->language = $language;
 		$this->group_helper = $group_helper;
 		$this->db = $db;
+		$this->phpbb_container = $phpbb_container;
 		$this->php_ext = $php_ext;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->groups_table = $groups_table;
@@ -97,11 +104,16 @@ class admin_controller
 				trigger_error('FORM_INVALID');
 			}
 
-			$this->save_settings();
+			if ($this->verify_key($this->request->variable('api_key', '')))
+			{
+				$this->save_settings();
 
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SETTING_CHANGED');
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SETTING_CHANGED');
 
-			trigger_error($this->language->lang('ACP_AKISMET_SETTING_SAVED') . adm_back_link($this->u_action));
+				trigger_error($this->language->lang('ACP_AKISMET_SETTING_SAVED') . adm_back_link($this->u_action));
+			}
+
+			trigger_error($this->language->lang('ACP_AKISMET_API_KEY_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$this->template->assign_vars(array(
@@ -111,6 +123,16 @@ class admin_controller
 			'S_GROUP_LIST'			=> $this->group_select_options($this->config['phpbb_akismet_add_registering_spammers_to_group']),
 			'S_GROUP_LIST_BLATANT'	=> $this->group_select_options($this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
 		));
+	}
+
+	/**
+	 * Set action
+	 *
+	 * @param	string	$u_action	Action
+	 */
+	public function set_action($u_action)
+	{
+		$this->u_action = $u_action;
 	}
 
 	/**
@@ -150,13 +172,20 @@ class admin_controller
 		$this->config->set('phpbb_akismet_add_registering_spammers_to_group', $this->request->variable('add_registering_spammers_to_group', 0));
 		$this->config->set('phpbb_akismet_add_registering_blatant_spammers_to_group', $this->request->variable('add_registering_blatant_spammers_to_group', 0));
 	}
-	/**
-	 * Set action
-	 *
-	 * @param	string	$u_action	Action
-	 */
-	public function set_action($u_action)
+
+	protected function verify_key($key)
 	{
-		$this->u_action = $u_action;
+		/** @var \Gothick\AkismetClient\Client $akismet */
+		$akismet = $this->phpbb_container->get('phpbb.akismet.client');
+
+		try
+		{
+			$result = $akismet->verifyKey($key);
+			return $result->isValid();
+		}
+		catch (\Gothick\AkismetClient\AkismetException $e)
+		{
+			return false;
+		}
 	}
 }

@@ -27,6 +27,7 @@ $lang = array_merge($lang, array(
 
 	'ACP_AKISMET_SETTING_CHANGED'	=> 'Akismet settings updated.', // For log
 	'ACP_AKISMET_SETTING_SAVED'		=> 'Settings have been saved successfully!',
+	'ACP_AKISMET_API_KEY_INVALID'	=> 'Akismet API key is invalid.',
 
 	'ACP_AKISMET_AKISMET_API_KEY'				=> 'Akismet API Key',
 	'ACP_AKISMET_API_KEY'						=> 'API Key',
