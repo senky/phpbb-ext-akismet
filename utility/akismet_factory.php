@@ -61,12 +61,6 @@ class akismet_factory
 	 */
 	public function createAkismet()
 	{
-		if (empty($this->akismet_api_key))
-		{
-			$this->log->add('critical', ANONYMOUS, $this->user->data['session_ip'], 'AKISMET_LOG_NO_KEY_CONFIGURED');
-			return false;
-		}
-
 		return new \Gothick\AkismetClient\Client(generate_board_url(), 'phpBB', $this->config['version'], $this->akismet_api_key);
 	}
 }

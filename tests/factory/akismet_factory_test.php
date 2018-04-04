@@ -42,12 +42,10 @@ class main_controller_test extends \phpbb_test_case
 	 */
 	public function test_factory_without_key()
 	{
-		$this->log->expects($this->once())
-			->method('add')
-			->with($this->equalTo('critical'));
+		$this->config['version'] = '1.0.0';
 
 		$factory = new \phpbb\akismet\utility\akismet_factory($this->config, $this->log, $this->user);
-		$this->assertFalse($factory->createAkismet());
+		$this->assertNotFalse($factory->createAkismet());
 	}
 
 	/**

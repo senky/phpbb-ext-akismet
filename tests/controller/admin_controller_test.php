@@ -52,6 +52,12 @@ namespace phpbb\akismet\tests\controller
 		/** @var \phpbb\group\helper|\PHPUnit_Framework_MockObject_MockObject */
 		protected $group_helper;
 
+		/** @var \phpbb\db\driver\driver_interface|\PHPUnit_Framework_MockObject_MockObject */
+		protected $db;
+
+		/** @var \phpbb_mock_event_dispatcher */
+		protected $phpbb_container;
+
 		/** @var string */
 		protected $php_ext;
 
@@ -79,6 +85,7 @@ namespace phpbb\akismet\tests\controller
 			$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 			$this->group_helper = $this->getMockBuilder(\phpbb\group\helper::class)->disableOriginalConstructor()->getMock();
 			$this->db = $this->getMockBuilder(\phpbb\db\driver\driver_interface::class)->getMock();
+			$this->phpbb_container = new \phpbb_mock_container_builder();
 			$this->php_ext = $phpEx;
 			$this->root_path = $phpbb_root_path;
 			$this->groups_table = 'phpbb_groups';
@@ -97,6 +104,7 @@ namespace phpbb\akismet\tests\controller
 				$this->language,
 				$this->group_helper,
 				$this->db,
+				$this->phpbb_container,
 				$this->php_ext,
 				$this->root_path,
 				$this->groups_table
@@ -124,9 +132,28 @@ namespace phpbb\akismet\tests\controller
 
 			$this->request->method('is_set_post')
 				->with('submit')
-				->willReturn('submit');
+				->willReturn(true);
 			
 			$this->setExpectedTriggerError(E_USER_NOTICE, 'FORM_INVALID');
+			
+			$controller->display_settings();
+		}
+
+		/**
+		 * Make sure we're paying attention to the invalid API key.
+		 */
+		public function test_invalid_api_key()
+		{
+			$controller = $this->get_controller();
+			self::$check_form_key_result = true;
+
+			$this->phpbb_container->set('phpbb.akismet.client', new \phpbb\akismet\tests\mock\akismet_mock());
+
+			$this->request->method('is_set_post')
+				->with('submit')
+				->willReturn(true);
+			
+			$this->setExpectedTriggerError(E_USER_WARNING, 'ACP_AKISMET_API_KEY_INVALID');
 			
 			$controller->display_settings();
 		}
@@ -139,9 +166,11 @@ namespace phpbb\akismet\tests\controller
 			$controller = $this->get_controller();
 			self::$check_form_key_result = true;
 
+			$this->phpbb_container->set('phpbb.akismet.client', new \phpbb\akismet\tests\mock\akismet_mock(false, true));
+
 			$this->request->method('is_set_post')
 				->with('submit')
-				->willReturn('submit');
+				->willReturn(true);
 
 			$this->log->expects($this->once())
 				->method('add')

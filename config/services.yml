@@ -24,6 +24,7 @@ services:
             - '@language'
             - '@group_helper'
             - '@dbal.conn'
+            - '@service_container'
             - '%core.php_ext%'
             - '%core.root_path%'
             - '%tables.groups%'

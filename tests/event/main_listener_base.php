@@ -27,8 +27,8 @@ class main_listener_base extends \phpbb_database_test_case
 	/** @var \phpbb\auth\auth|\PHPUnit_Framework_MockObject_MockObject */
 	protected $auth;
 
-	/** @var \phpbb\akismet\tests\mock\akismet_mock */
-	protected $akismet;
+	/** @var \phpbb_mock_event_dispatcher */
+	protected $phpbb_container;
 
 	/** @var string */
 	protected $php_ext;
