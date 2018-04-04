@@ -81,7 +81,8 @@ class main_listener implements EventSubscriberInterface
 			'core.posting_modify_submit_post_before'		=> 'check_submitted_post',
 			'core.notification_manager_add_notifications'	=> 'add_akismet_details_to_notification',
 			'core.user_add_after'							=> 'check_new_user',
-			'core.delete_group_after'						=> 'group_deleted'
+			'core.delete_group_after'						=> 'group_deleted',
+			'core.approve_posts_after'						=> 'submit_ham',
 		);
 	}
 
@@ -197,7 +198,7 @@ class main_listener implements EventSubscriberInterface
 			'comment_author_email'	=> $this->user->data['user_email'],
 			'comment_author'		=> $this->user->data['username'],
 			'comment_author_url'	=> isset($this->user->profile_fields['pf_phpbb_website']) ? $this->user->profile_fields['pf_phpbb_website'] : '',
-			'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "t={$data['topic_id']}", true, ''),
+			'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "p={$data['post_id']}", true, ''),
 			// 'forum-post' recommended for type:
 			// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
 			'comment_type'			=> 'forum-post',
@@ -225,76 +226,7 @@ class main_listener implements EventSubscriberInterface
 
 		try
 		{
-			/** @var \Gothick\AkismetClient\Client $akismet */
-			$akismet = $this->phpbb_container->get('phpbb.akismet.client');
-			// TODO: Use AKISMET_LOG_NO_KEY_CONFIGURED later, when we've changed things so we can do key validation.
-
-			// We can't just pass $_SERVER in to our Akismet client as phpBB turns off super globals (which is,
-			// of course, fair enough.) Interrogate our request object instead, grabbing as many relevant
-			// things as we can, excluding anything that might leak anything sensitive to Akismet (bear in
-			// mind we're already throwing all the user details and the entire contents of their comment
-			// at Akismet, of course.)
-
-			// https://akismet.com/development/api/#comment-check
-			// "This data is highly useful to Akismet. How the submitted content interacts with the server can
-			// be very telling, so please include as much of it as possible."
-			$server_vars = array(
-					// TODO: Use a blacklist for sensitive server-related stuff, rather than a whitelist. It'll
-					// be more friendly for other people's setups, and the code will be shorter.
-					'AUTH_TYPE',
-					'GATEWAY_INTERFACE',
-					'HTTPS',
-					'HTTP_ACCEPT',
-					'HTTP_ACCEPT_CHARSET',
-					'HTTP_ACCEPT_ENCODING',
-					'HTTP_ACCEPT_LANGUAGE',
-					'HTTP_CONNECTION',
-					'HTTP_HOST',
-					'HTTP_REFERER',
-					'HTTP_USER_AGENT',
-					'ORIG_PATH_INFO',
-					'PATH_INFO',
-					'PATH_TRANSLATED',
-					'PHP_AUTH_DIGEST',
-					'PHP_AUTH_PW',
-					'PHP_SELF',
-					'PHP_AUTH_USER',
-					'QUERY_STRING',
-					'REDIRECT_REMOTE_USER',
-					'REMOTE_ADDR',
-					'REMOTE_HOST',
-					'REMOTE_PORT',
-					'REMOTE_USER',
-					'REQUEST_METHOD',
-					'REQUEST_SCHEME',
-					'REQUEST_TIME',
-					'REQUEST_TIME_FLOAT',
-					'REQUEST_URI',
-					'SCRIPT_FILENAME',
-					'SCRIPT_NAME',
-					'SCRIPT_URI',
-					'SCRIPT_URL',
-					'SERVER_ADDR',
-					'SERVER_NAME',
-					'SERVER_PORT',
-					'SERVER_PROTOCOL',
-					'SERVER_SIGNATURE',
-					'SERVER_SOFTWARE',
-					'USER'
-			);
-
-			// Try to recreate $_SERVER.
-			$server = array();
-			foreach ($server_vars as $var)
-			{
-				$value = $this->request->server($var, null);
-				if ($value !== null)
-				{
-					$server[$var] = $value;
-				}
-			}
-
-			$check = $akismet->commentCheck($params, $server);
+			$check = $this->akismet_call('commentCheck', $params);
 			$result['is_spam'] = $check->isSpam();
 			$result['is_blatant_spam'] = $check->isBlatantSpam();
 		}
@@ -348,6 +280,37 @@ class main_listener implements EventSubscriberInterface
 		}
 	}
 
+	public function submit_ham($event)
+	{
+		// We only want newly approved posts
+		if ($event['action'] == 'restore')
+		{
+			return;
+		}
+
+		foreach ($event['post_info'] as $post)
+		{
+			try
+			{
+				$params = array(
+					'user_ip'				=> $post['user_ip'],
+					'comment_content'		=> $post['post_text'],
+					'comment_author_email'	=> $post['user_email'],
+					'comment_author'		=> $post['username'],
+					'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "p={$post['post_id']}", true, ''),
+					// 'forum-post' recommended for type:
+					// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
+					'comment_type'			=> 'forum-post',
+				);
+				$this->akismet_call('submitHam', $params);
+			}
+			catch (\Exception $e)
+			{
+				$this->log->add('critical', $this->user->data['username'], $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
+			}
+		}
+	}
+
 	/**
 	 * Log situation when we stop adding new potential spammers to designated group
 	 * because it was removed.
@@ -378,5 +341,79 @@ class main_listener implements EventSubscriberInterface
 		}
 
 		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $log_message, false, array($data['topic_title'], $this->user->data['username']));
+	}
+
+	protected function akismet_call($method, $params)
+	{
+		/** @var \Gothick\AkismetClient\Client $akismet */
+		$akismet = $this->phpbb_container->get('phpbb.akismet.client');
+		// TODO: Use AKISMET_LOG_NO_KEY_CONFIGURED later, when we've changed things so we can do key validation.
+
+		// We can't just pass $_SERVER in to our Akismet client as phpBB turns off super globals (which is,
+		// of course, fair enough.) Interrogate our request object instead, grabbing as many relevant
+		// things as we can, excluding anything that might leak anything sensitive to Akismet (bear in
+		// mind we're already throwing all the user details and the entire contents of their comment
+		// at Akismet, of course.)
+
+		// https://akismet.com/development/api/#comment-check
+		// "This data is highly useful to Akismet. How the submitted content interacts with the server can
+		// be very telling, so please include as much of it as possible."
+		$server_vars = array(
+				// TODO: Use a blacklist for sensitive server-related stuff, rather than a whitelist. It'll
+				// be more friendly for other people's setups, and the code will be shorter.
+				'AUTH_TYPE',
+				'GATEWAY_INTERFACE',
+				'HTTPS',
+				'HTTP_ACCEPT',
+				'HTTP_ACCEPT_CHARSET',
+				'HTTP_ACCEPT_ENCODING',
+				'HTTP_ACCEPT_LANGUAGE',
+				'HTTP_CONNECTION',
+				'HTTP_HOST',
+				'HTTP_REFERER',
+				'HTTP_USER_AGENT',
+				'ORIG_PATH_INFO',
+				'PATH_INFO',
+				'PATH_TRANSLATED',
+				'PHP_AUTH_DIGEST',
+				'PHP_AUTH_PW',
+				'PHP_SELF',
+				'PHP_AUTH_USER',
+				'QUERY_STRING',
+				'REDIRECT_REMOTE_USER',
+				'REMOTE_ADDR',
+				'REMOTE_HOST',
+				'REMOTE_PORT',
+				'REMOTE_USER',
+				'REQUEST_METHOD',
+				'REQUEST_SCHEME',
+				'REQUEST_TIME',
+				'REQUEST_TIME_FLOAT',
+				'REQUEST_URI',
+				'SCRIPT_FILENAME',
+				'SCRIPT_NAME',
+				'SCRIPT_URI',
+				'SCRIPT_URL',
+				'SERVER_ADDR',
+				'SERVER_NAME',
+				'SERVER_PORT',
+				'SERVER_PROTOCOL',
+				'SERVER_SIGNATURE',
+				'SERVER_SOFTWARE',
+				'USER'
+		);
+
+		// Try to recreate $_SERVER.
+		$server = array();
+		foreach ($server_vars as $var)
+		{
+			$value = $this->request->server($var, null);
+			if ($value !== null)
+			{
+				$server[$var] = $value;
+			}
+		}
+
+		return $akismet->$method($params, $server);
 	}
 }
