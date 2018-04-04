@@ -51,6 +51,14 @@
 				</select>
 			</dd>
 		</dl>
+		<dl>
+			<dt>
+				<label for="skip_check_after_n_posts">{{ lang('ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS') ~ lang('COLON') }}</label><br /><span>{{ lang('ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="number" min="0" id="skip_check_after_n_posts" name="skip_check_after_n_posts" value="{{ SKIP_CHECK_AFTER_N_POSTS }}" maxlength="255" />
+			</dd>
+		</dl>
 	</fieldset>
 	<fieldset class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
