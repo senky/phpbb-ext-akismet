@@ -27,8 +27,8 @@ class main_listener_base extends \phpbb_database_test_case
 	/** @var \phpbb\auth\auth|\PHPUnit_Framework_MockObject_MockObject */
 	protected $auth;
 
-	/** @var \phpbb_mock_event_dispatcher */
-	protected $phpbb_container;
+	/** @var \phpbb\akismet\tests\mock\akismet_mock */
+	protected $akismet;
 
 	/** @var string */
 	protected $php_ext;
@@ -66,7 +66,7 @@ class main_listener_base extends \phpbb_database_test_case
 		$this->config = new \phpbb\config\config(array());
 		$this->log = $this->getMockBuilder(\phpbb\log\dummy::class)->getMock();
 		$this->auth = $this->getMock(\phpbb\auth\auth::class);
-		$this->phpbb_container = new \phpbb_mock_container_builder();
+		$this->akismet = new \phpbb\akismet\tests\mock\akismet_mock();
 		$this->php_ext = $phpEx;
 		$this->root_path = $phpbb_root_path;
 
@@ -74,7 +74,7 @@ class main_listener_base extends \phpbb_database_test_case
 		$db = $this->new_dbal();
 		$auth = $this->auth;
 		$phpbb_dispatcher = new \phpbb_mock_event_dispatcher();
-		$phpbb_container = $this->phpbb_container;
+		$phpbb_container = new \phpbb_mock_container_builder();
 		$phpbb_container->set('group_helper', $this->getMockBuilder(\phpbb\group\helper::class)->disableOriginalConstructor()->getMock());
 		$phpbb_log = $this->log;
 	}
@@ -87,7 +87,7 @@ class main_listener_base extends \phpbb_database_test_case
 			$this->config,
 			$this->log,
 			$this->auth,
-			$this->phpbb_container,
+			$this->akismet,
 			$this->php_ext,
 			$this->root_path
 		);

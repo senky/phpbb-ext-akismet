@@ -14,7 +14,6 @@ namespace phpbb\akismet\event;
  * @ignore
  */
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Event listener
@@ -204,7 +203,7 @@ class main_listener implements EventSubscriberInterface
 
 	/**
 	 * Inform Akismet service about false positive.
-	 * 
+	 *
 	 * Note that we submit all approved posts as ham, regardless of
 	 * why post was in moderation queue. Akismet can deal with it
 	 * and maybe even be trainer better.

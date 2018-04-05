@@ -10,8 +10,6 @@
 
 namespace phpbb\akismet\controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
 * Admin controller
 */

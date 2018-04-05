@@ -94,20 +94,23 @@ class submit_ham_test extends main_listener_base
 	 */
 	public function test_submit_ham($action, $post_info, $params, $returns_exception)
 	{
+		// Temporarily replace Akismet client
+		$akismet = $this->akismet;
+		$this->akismet = $this->getMockBuilder(\Gothick\AkismetClient\Client::class)
+			->disableOriginalConstructor()
+			->getMock();
+
 		// Subscribe our method
 		$dispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
 		$dispatcher->addListener('core.approve_posts_after', array($this->get_listener(), 'submit_ham'));
 		
-		// Set Akismet client
-		$akismet = $this->getMockBuilder(\Gothick\AkismetClient\Client::class)
-			->disableOriginalConstructor()
-			->getMock();
-		$this->phpbb_container->set('phpbb.akismet.client', $akismet);
+		// Make sure we have API key set
+		$this->config['phpbb_akismet_api_key'] = 'abcdef';
 
 		// Set expectations
 		if ($action == 'approve')
 		{
-			$akismet->expects($this->exactly(count($post_info)))
+			$this->akismet->expects($this->exactly(count($post_info)))
 				->method('submitHam')
 				->with($this->callback(function($input) use ($params, $post_info) {
 					static $index = 0;
@@ -136,5 +139,8 @@ class submit_ham_test extends main_listener_base
 
 		// Dispatch event
 		$dispatcher->dispatch('core.approve_posts_after', $event);
+
+		// Switch back Akismet client
+		$this->akismet = $akismet;
 	}
 }
