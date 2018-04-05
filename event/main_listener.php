@@ -102,6 +102,12 @@ class main_listener implements EventSubscriberInterface
 			return;
 		}
 
+		// Skip the Akismet check for users with more than defined posts
+		if ($this->config['phpbb_akismet_skip_check_after_n_posts'] != 0 && $this->user->data['user_posts'] > $this->config['phpbb_akismet_skip_check_after_n_posts'])
+		{
+			return;
+		}
+
 		$data = $event['data'];
 		if ($this->is_spam($data))
 		{

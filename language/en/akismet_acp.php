@@ -42,4 +42,7 @@ $lang = array_merge($lang, array(
 	'ACP_AKISMET_DONT_ADD_REGISTERING_BLATANT_SPAMMERS_TO_GROUP'	=> 'Don‘t add registering spammers to additional groups',
 	'ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP'			=> 'Add registering blatant spammers to a group',
 	'ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP_EXPLAIN'	=> 'Akismet‘s "blatant" spammer detection will be triggered by the worst, most pervasive, most obvious spam. You can add these spammers to a particular group, too, perhpas one with no posting privileges at all. <strong>NB: For security reasons, you can only add new spammy registrations to user-defined groups or the Newly Registered group</strong>.',
+
+	'ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS'			=> 'Skip the check if a user has more than this number of approved posts already',
+	'ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS_EXPLAIN'	=> 'Set to 0 to check every post regardless. This might be useful, because in case someone‘s account is compromised, spam posts will be sent to moderation queue and can be easily removed. But it also adds more load to the server.',
 ));

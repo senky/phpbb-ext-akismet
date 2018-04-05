@@ -192,6 +192,7 @@ namespace phpbb\akismet\tests\controller
 			$this->config['phpbb_akismet_check_registrations'] = 1;
 			$this->config['phpbb_akismet_add_registering_spammers_to_group'] = 2;
 			$this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'] = 3;
+			$this->config['phpbb_akismet_skip_check_after_n_posts'] = 5;
 
 			$this->db->expects($this->exactly(8))
 				->method('sql_fetchrow')
@@ -256,6 +257,10 @@ namespace phpbb\akismet\tests\controller
 						return false;
 					}
 					if (!preg_match('/option value="3" selected="selected"/', $vars['S_GROUP_LIST_BLATANT']))
+					{
+						return false;
+					}
+					if ($vars['SKIP_CHECK_AFTER_N_POSTS'] != 5)
 					{
 						return false;
 					}

@@ -117,11 +117,12 @@ class admin_controller
 		}
 
 		$this->template->assign_vars(array(
-			'U_ACTION'				=> $this->u_action,
-			'API_KEY'				=> $this->config['phpbb_akismet_api_key'],
-			'S_CHECK_REGISTRATIONS'	=> $this->config['phpbb_akismet_check_registrations'],
-			'S_GROUP_LIST'			=> $this->group_select_options($this->config['phpbb_akismet_add_registering_spammers_to_group']),
-			'S_GROUP_LIST_BLATANT'	=> $this->group_select_options($this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
+			'U_ACTION'					=> $this->u_action,
+			'API_KEY'					=> $this->config['phpbb_akismet_api_key'],
+			'S_CHECK_REGISTRATIONS'		=> $this->config['phpbb_akismet_check_registrations'],
+			'S_GROUP_LIST'				=> $this->group_select_options($this->config['phpbb_akismet_add_registering_spammers_to_group']),
+			'S_GROUP_LIST_BLATANT'		=> $this->group_select_options($this->config['phpbb_akismet_add_registering_blatant_spammers_to_group']),
+			'SKIP_CHECK_AFTER_N_POSTS'	=> $this->config['phpbb_akismet_skip_check_after_n_posts'],
 		));
 	}
 
@@ -171,6 +172,7 @@ class admin_controller
 		$this->config->set('phpbb_akismet_check_registrations', $this->request->variable('check_registrations', 0));
 		$this->config->set('phpbb_akismet_add_registering_spammers_to_group', $this->request->variable('add_registering_spammers_to_group', 0));
 		$this->config->set('phpbb_akismet_add_registering_blatant_spammers_to_group', $this->request->variable('add_registering_blatant_spammers_to_group', 0));
+		$this->config->set('phpbb_akismet_skip_check_after_n_posts', $this->request->variable('skip_check_after_n_posts', 0));
 	}
 
 	protected function verify_key($key)

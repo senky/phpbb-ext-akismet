@@ -37,6 +37,7 @@ class m3_configs extends \phpbb\db\migration\migration
 			array('config.add', array('phpbb_akismet_check_registrations', 0)),
 			array('config.add', array('phpbb_akismet_add_registering_spammers_to_group', 0)),
 			array('config.add', array('phpbb_akismet_add_registering_blatant_spammers_to_group', 0)),
+			array('config.add', array('phpbb_akismet_skip_check_after_n_posts', 0)),
 		);
 	}
 }

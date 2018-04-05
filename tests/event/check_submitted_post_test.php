@@ -19,35 +19,87 @@ class check_submitted_post_test extends main_listener_base
 				'viagra-test-123',
 				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
 				'reply',
+				'0',
+				false,
+				false,
 				false,
 			),
 			array(
 				'viagra-test-123',
 				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
 				'post', // Post produces a different log message, so it's a different path.
+				'0',
+				false,
+				false,
 				false,
 			),
 			array(
 				'matt',
 				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
 				'reply',
+				'0',
+				false,
+				false,
 				true,
-			)
+			),
+			array(
+				'viagra-test-123', // Username should be marked spam, but it should pass because of posts count
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+				'reply',
+				'6',
+				false,
+				false,
+				true,
+			),
+			array(
+				'viagra-test-123', // Username should be marked spam, but it should pass because user is admin
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+				'reply',
+				'0',
+				true,
+				false,
+				true,
+			),
+			array(
+				'viagra-test-123', // Username should be marked spam, but it should pass because user is moderator
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+				'reply',
+				'0',
+				false,
+				true,
+				true,
+			),
 		);
 	}
 
 	/**
 	 * @dataProvider post_data
 	 */
-	public function test_post_check($username, $message, $mode, $should_pass)
+	public function test_post_check($username, $message, $mode, $user_posts, $is_admin, $is_mod, $should_pass)
 	{
 		// Subscribe our method
 		$dispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
 		$dispatcher->addListener('core.posting_modify_submit_post_before', array($this->get_listener(), 'check_submitted_post'));
 		
-		// Set username and Akismet client
+		// Set username, user posts, skip_check_after_n_posts and Akismet client
 		$this->user->data['username'] = $username;
+		$this->user->data['user_posts'] = $user_posts;
+		$this->config['phpbb_akismet_skip_check_after_n_posts'] = 5;
 		$this->phpbb_container->set('phpbb.akismet.client', new \phpbb\akismet\tests\mock\akismet_mock($blatant));
+
+		$this->auth->expects($this->at(0))
+			->method('acl_getf_global')
+			->with('m_')
+			->willReturn($is_mod);
+
+		// Admin check is triggered only if user is not moderator
+		if (!$is_mod)
+		{
+			$this->auth->expects($this->at(1))
+				->method('acl_getf_global')
+				->with('a_')
+				->willReturn($is_admin);
+		}
 
 		// Set expectations
 		if (!$should_pass)
