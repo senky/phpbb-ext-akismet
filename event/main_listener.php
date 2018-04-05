@@ -36,11 +36,8 @@ class main_listener implements EventSubscriberInterface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
-	protected $phpbb_container;
-
-	/** @var \messenger */
-	protected $messenger;
+	/** @var \Gothick\AkismetClient\Client */
+	protected $akismet;
 
 	/** @var string */
 	protected $php_ext;
@@ -51,25 +48,25 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\user              $user
-	 * @param \phpbb\request\request   $request
-	 * @param \phpbb\config\config     $config
-	 * @param \phpbb\log\log_interface $log
-	 * @param \phpbb\auth\auth         $auth
-	 * @param ContainerInterface       $phpbb_container
-	 * @param string                   $php_ext
-	 * @param string                   $phpbb_root_path
+	 * @param \phpbb\user              			  $user				phpBB User class
+	 * @param \phpbb\request\request		      $request			phpBB Request class
+	 * @param \phpbb\config\config    			  $config			phpBB Config class
+	 * @param \phpbb\log\log_interface			  $log				phpBB Log class
+	 * @param \phpbb\auth\auth         			  $auth				phpBB Auth class
+	 * @param \Gothick\AkismetClient\Client       $akismet			Akismet client class
+	 * @param string                   			  $php_ext			php extension
+	 * @param string                   			  $phpbb_root_path	phpBB root path
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\request\request $request, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\auth\auth $auth, ContainerInterface $phpbb_container, $php_ext, $phpbb_root_path)
+	public function __construct(\phpbb\user $user, \phpbb\request\request $request, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\auth\auth $auth, \Gothick\AkismetClient\Client $akismet, $php_ext, $phpbb_root_path)
 	{
 		$this->user = $user;
+		$this->request = $request;
 		$this->config = $config;
 		$this->log = $log;
 		$this->auth = $auth;
-		$this->phpbb_container = $phpbb_container;
+		$this->akismet = $akismet;
 		$this->php_ext = $php_ext;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->request = $request;
 	}
 
 	/**
@@ -143,7 +140,7 @@ class main_listener implements EventSubscriberInterface
 				'comment_author_email'	=> $user_row['user_email'],
 			];
 
-			$result = $this->akismet_comment_check($user_id, $params);
+			$result = $this->akismet_comment_check($params);
 
 			if ($result['is_spam'])
 			{
@@ -161,81 +158,6 @@ class main_listener implements EventSubscriberInterface
 				}
 			}
 		}
-	}
-
-	/**
-	 * Add user to group. Load phpBB function when needed.
-	 *
-	 * @param int $group_id
-	 * @param int $user_id
-	 */
-	protected function group_user_add($group_id, $user_id)
-	{
-		if (!function_exists('group_user_add'))
-		{
-			include $this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext;
-		}
-
-		group_user_add($group_id, $user_id);
-	}
-
-	/**
-	 * Check a comment for spam.
-	 *
-	 * @param array $data Data array from event that triggered us.
-	 * @return bool
-	 */
-	protected function is_spam($data)
-	{
-		// For URL of poster, i.e. poster's "website" profile field.
-		$this->user->get_profile_fields($this->user->data['user_id']);
-
-		// Akismet fields
-		$params = array(
-			'user_ip'				=> $this->user->ip,
-			'user_agent'			=> $this->user->browser,
-			'comment_content'		=> $data['message'],
-			'comment_author_email'	=> $this->user->data['user_email'],
-			'comment_author'		=> $this->user->data['username'],
-			'comment_author_url'	=> isset($this->user->profile_fields['pf_phpbb_website']) ? $this->user->profile_fields['pf_phpbb_website'] : '',
-			'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "p={$data['post_id']}", true, ''),
-			// 'forum-post' recommended for type:
-			// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
-			'comment_type'			=> 'forum-post',
-		);
-
-		$result = $this->akismet_comment_check($this->user->data['user_id'], $params);
-
-		return $result['is_spam'];
-	}
-
-	/**
-	 * Call Akismet's comment-check method using our handy client.
-	 * I hear it was written by a talented and ruggedly-handsome programmer.
-	 *
-	 * @param int $user_id User ID of the commenter (or newly-registered potential commenter)
-	 * @param array $params Akismet parameters
-	 * @return array Result array
-	 */
-	protected function akismet_comment_check($user_id, $params)
-	{
-		$result = array(
-			'is_spam'			=> false,
-			'is_blatant_spam'	=> false,
-		);
-
-		try
-		{
-			$check = $this->akismet_call('commentCheck', $params);
-			$result['is_spam'] = $check->isSpam();
-			$result['is_blatant_spam'] = $check->isBlatantSpam();
-		}
-		catch (\Exception $e)
-		{
-			$this->log->add('critical', $user_id, $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
-		}
-
-		return $result;
 	}
 
 	/**
@@ -280,6 +202,15 @@ class main_listener implements EventSubscriberInterface
 		}
 	}
 
+	/**
+	 * Inform Akismet service about false positive.
+	 * 
+	 * Note that we submit all approved posts as ham, regardless of
+	 * why post was in moderation queue. Akismet can deal with it
+	 * and maybe even be trainer better.
+	 *
+	 * @param \phpbb\event\data $event
+	 */
 	public function submit_ham($event)
 	{
 		// We only want newly approved posts
@@ -290,25 +221,88 @@ class main_listener implements EventSubscriberInterface
 
 		foreach ($event['post_info'] as $post)
 		{
-			try
-			{
-				$params = array(
-					'user_ip'				=> $post['user_ip'],
-					'comment_content'		=> $post['post_text'],
-					'comment_author_email'	=> $post['user_email'],
-					'comment_author'		=> $post['username'],
-					'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "p={$post['post_id']}", true, ''),
-					// 'forum-post' recommended for type:
-					// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
-					'comment_type'			=> 'forum-post',
-				);
-				$this->akismet_call('submitHam', $params, false); // without server, current user and page data are different than spammer's
-			}
-			catch (\Exception $e)
-			{
-				$this->log->add('critical', $this->user->data['username'], $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
-			}
+			$params = array(
+				'user_ip'				=> $post['user_ip'],
+				'comment_content'		=> $post['post_text'],
+				'comment_author_email'	=> $post['user_email'],
+				'comment_author'		=> $post['username'],
+				'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "p={$post['post_id']}", true, ''),
+				// 'forum-post' recommended for type:
+				// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
+				'comment_type'			=> 'forum-post',
+			);
+			$this->akismet_call('submitHam', $params, false); // without server, current user and page data are different than spammer's
 		}
+	}
+
+	/**
+	 * Add user to a group. Load phpBB function when needed.
+	 *
+	 * @param int $group_id
+	 * @param int $user_id
+	 */
+	protected function group_user_add($group_id, $user_id)
+	{
+		if (!function_exists('group_user_add'))
+		{
+			include $this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext;
+		}
+
+		group_user_add($group_id, $user_id);
+	}
+
+	/**
+	 * Check a post for spam.
+	 *
+	 * @param array $data Data array from event that triggered us.
+	 * @return bool
+	 */
+	protected function is_spam($data)
+	{
+		// For URL of poster, i.e. poster's "website" profile field.
+		$this->user->get_profile_fields($this->user->data['user_id']);
+
+		// Akismet fields
+		$params = array(
+			'user_ip'				=> $this->user->ip,
+			'user_agent'			=> $this->user->browser,
+			'comment_content'		=> $data['message'],
+			'comment_author_email'	=> $this->user->data['user_email'],
+			'comment_author'		=> $this->user->data['username'],
+			'comment_author_url'	=> isset($this->user->profile_fields['pf_phpbb_website']) ? $this->user->profile_fields['pf_phpbb_website'] : '',
+			'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "p={$data['post_id']}", true, ''),
+			// 'forum-post' recommended for type:
+			// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
+			'comment_type'			=> 'forum-post',
+		);
+
+		$result = $this->akismet_comment_check($params);
+
+		return $result['is_spam'];
+	}
+
+	/**
+	 * Call Akismet's comment-check method using our handy client.
+	 * I hear it was written by a talented and ruggedly-handsome programmer.
+	 *
+	 * @param	array	$params		Akismet parameters
+	 * @return	array	Result array
+	 */
+	protected function akismet_comment_check($params)
+	{
+		$result = array(
+			'is_spam'			=> false,
+			'is_blatant_spam'	=> false,
+		);
+
+		$check = $this->akismet_call('commentCheck', $params);
+		if ($check !== false)
+		{
+			$result['is_spam'] = $check->isSpam();
+			$result['is_blatant_spam'] = $check->isBlatantSpam();
+		}
+
+		return $result;
 	}
 
 	/**
@@ -343,11 +337,21 @@ class main_listener implements EventSubscriberInterface
 		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $log_message, false, array($data['topic_title'], $this->user->data['username']));
 	}
 
+	/**
+	 * Perform an API call to Akismet server
+	 *
+	 * @param	string	$method			Method name of the call
+	 * @param	array	$params			Parameters for the call
+	 * @param	boolean	$with_server	Should we send server info as well?
+	 * @return	boolean|\Gothick\AkismetClient\Result\ClientResult	False on failure; result class of defined method otherwise
+	 */
 	protected function akismet_call($method, $params, $with_server = true)
 	{
-		/** @var \Gothick\AkismetClient\Client $akismet */
-		$akismet = $this->phpbb_container->get('phpbb.akismet.client');
-		// TODO: Use AKISMET_LOG_NO_KEY_CONFIGURED later, when we've changed things so we can do key validation.
+		// Call will definitely not pass without API key, don't even try
+		if (empty($this->config['phpbb_akismet_api_key']))
+		{
+			return false;
+		}
 
 		$server = array();
 		if ($with_server)
@@ -362,48 +366,48 @@ class main_listener implements EventSubscriberInterface
 			// "This data is highly useful to Akismet. How the submitted content interacts with the server can
 			// be very telling, so please include as much of it as possible."
 			$server_vars = array(
-					// TODO: Use a blacklist for sensitive server-related stuff, rather than a whitelist. It'll
-					// be more friendly for other people's setups, and the code will be shorter.
-					'AUTH_TYPE',
-					'GATEWAY_INTERFACE',
-					'HTTPS',
-					'HTTP_ACCEPT',
-					'HTTP_ACCEPT_CHARSET',
-					'HTTP_ACCEPT_ENCODING',
-					'HTTP_ACCEPT_LANGUAGE',
-					'HTTP_CONNECTION',
-					'HTTP_HOST',
-					'HTTP_REFERER',
-					'HTTP_USER_AGENT',
-					'ORIG_PATH_INFO',
-					'PATH_INFO',
-					'PATH_TRANSLATED',
-					'PHP_AUTH_DIGEST',
-					'PHP_AUTH_PW',
-					'PHP_SELF',
-					'PHP_AUTH_USER',
-					'QUERY_STRING',
-					'REDIRECT_REMOTE_USER',
-					'REMOTE_ADDR',
-					'REMOTE_HOST',
-					'REMOTE_PORT',
-					'REMOTE_USER',
-					'REQUEST_METHOD',
-					'REQUEST_SCHEME',
-					'REQUEST_TIME',
-					'REQUEST_TIME_FLOAT',
-					'REQUEST_URI',
-					'SCRIPT_FILENAME',
-					'SCRIPT_NAME',
-					'SCRIPT_URI',
-					'SCRIPT_URL',
-					'SERVER_ADDR',
-					'SERVER_NAME',
-					'SERVER_PORT',
-					'SERVER_PROTOCOL',
-					'SERVER_SIGNATURE',
-					'SERVER_SOFTWARE',
-					'USER'
+				// TODO: Use a blacklist for sensitive server-related stuff, rather than a whitelist. It'll
+				// be more friendly for other people's setups, and the code will be shorter.
+				'AUTH_TYPE',
+				'GATEWAY_INTERFACE',
+				'HTTPS',
+				'HTTP_ACCEPT',
+				'HTTP_ACCEPT_CHARSET',
+				'HTTP_ACCEPT_ENCODING',
+				'HTTP_ACCEPT_LANGUAGE',
+				'HTTP_CONNECTION',
+				'HTTP_HOST',
+				'HTTP_REFERER',
+				'HTTP_USER_AGENT',
+				'ORIG_PATH_INFO',
+				'PATH_INFO',
+				'PATH_TRANSLATED',
+				'PHP_AUTH_DIGEST',
+				'PHP_AUTH_PW',
+				'PHP_SELF',
+				'PHP_AUTH_USER',
+				'QUERY_STRING',
+				'REDIRECT_REMOTE_USER',
+				'REMOTE_ADDR',
+				'REMOTE_HOST',
+				'REMOTE_PORT',
+				'REMOTE_USER',
+				'REQUEST_METHOD',
+				'REQUEST_SCHEME',
+				'REQUEST_TIME',
+				'REQUEST_TIME_FLOAT',
+				'REQUEST_URI',
+				'SCRIPT_FILENAME',
+				'SCRIPT_NAME',
+				'SCRIPT_URI',
+				'SCRIPT_URL',
+				'SERVER_ADDR',
+				'SERVER_NAME',
+				'SERVER_PORT',
+				'SERVER_PROTOCOL',
+				'SERVER_SIGNATURE',
+				'SERVER_SOFTWARE',
+				'USER',
 			);
 
 			// Try to recreate $_SERVER.
@@ -417,6 +421,15 @@ class main_listener implements EventSubscriberInterface
 			}
 		}
 
-		return $akismet->$method($params, $server);
+		try
+		{
+			return $this->akismet->$method($params, $server);
+		}
+		catch (\Exception $e)
+		{
+			$this->log->add('critical', $this->user->data['username'], $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
+		}
+
+		return false;
 	}
 }
