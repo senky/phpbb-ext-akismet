@@ -44,6 +44,9 @@ class main_listener implements EventSubscriberInterface
 	/** @var string */
 	protected $phpbb_root_path;
 
+	/** @var array */
+	protected $server_vars = array();
+
 	/**
 	 * Constructor
 	 *
@@ -206,14 +209,13 @@ class main_listener implements EventSubscriberInterface
 	 *
 	 * Note that we submit all approved posts as ham, regardless of
 	 * why post was in moderation queue. Akismet can deal with it
-	 * and maybe even be trainer better.
+	 * and maybe even be trained better.
 	 *
 	 * @param \phpbb\event\data $event
 	 */
 	public function submit_ham($event)
 	{
-		// We only want newly approved posts
-		if ($event['action'] == 'restore')
+		if ($event['action'] !== 'approve')
 		{
 			return;
 		}
@@ -352,76 +354,9 @@ class main_listener implements EventSubscriberInterface
 			return false;
 		}
 
-		$server = array();
-		if ($with_server)
-		{
-			// We can't just pass $_SERVER in to our Akismet client as phpBB turns off super globals (which is,
-			// of course, fair enough.) Interrogate our request object instead, grabbing as many relevant
-			// things as we can, excluding anything that might leak anything sensitive to Akismet (bear in
-			// mind we're already throwing all the user details and the entire contents of their comment
-			// at Akismet, of course.)
-
-			// https://akismet.com/development/api/#comment-check
-			// "This data is highly useful to Akismet. How the submitted content interacts with the server can
-			// be very telling, so please include as much of it as possible."
-			$server_vars = array(
-				// TODO: Use a blacklist for sensitive server-related stuff, rather than a whitelist. It'll
-				// be more friendly for other people's setups, and the code will be shorter.
-				'AUTH_TYPE',
-				'GATEWAY_INTERFACE',
-				'HTTPS',
-				'HTTP_ACCEPT',
-				'HTTP_ACCEPT_CHARSET',
-				'HTTP_ACCEPT_ENCODING',
-				'HTTP_ACCEPT_LANGUAGE',
-				'HTTP_CONNECTION',
-				'HTTP_HOST',
-				'HTTP_REFERER',
-				'HTTP_USER_AGENT',
-				'ORIG_PATH_INFO',
-				'PATH_INFO',
-				'PATH_TRANSLATED',
-				'PHP_AUTH_DIGEST',
-				'PHP_AUTH_PW',
-				'PHP_SELF',
-				'PHP_AUTH_USER',
-				'QUERY_STRING',
-				'REDIRECT_REMOTE_USER',
-				'REMOTE_ADDR',
-				'REMOTE_HOST',
-				'REMOTE_PORT',
-				'REMOTE_USER',
-				'REQUEST_METHOD',
-				'REQUEST_SCHEME',
-				'REQUEST_TIME',
-				'REQUEST_TIME_FLOAT',
-				'REQUEST_URI',
-				'SCRIPT_FILENAME',
-				'SCRIPT_NAME',
-				'SCRIPT_URI',
-				'SCRIPT_URL',
-				'SERVER_ADDR',
-				'SERVER_NAME',
-				'SERVER_PORT',
-				'SERVER_PROTOCOL',
-				'SERVER_SIGNATURE',
-				'SERVER_SOFTWARE',
-				'USER',
-			);
-
-			// Try to recreate $_SERVER.
-			foreach ($server_vars as $var)
-			{
-				$value = $this->request->server($var, null);
-				if ($value !== null)
-				{
-					$server[$var] = $value;
-				}
-			}
-		}
-
 		try
 		{
+			$server = $with_server ? $this->get_server_vars() : array();
 			return $this->akismet->$method($params, $server);
 		}
 		catch (\Exception $e)
@@ -430,5 +365,82 @@ class main_listener implements EventSubscriberInterface
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get server variables. Data are cached for multiple use.
+	 *
+	 * @return array	Server variables
+	 */
+	protected function get_server_vars()
+	{
+		if (!empty($this->server_vars))
+		{
+			return $this->server_vars;
+		}
+
+		// We can't just pass $_SERVER in to our Akismet client as phpBB turns off super globals (which is,
+		// of course, fair enough.) Interrogate our request object instead, grabbing as many relevant
+		// things as we can, excluding anything that might leak anything sensitive to Akismet (bear in
+		// mind we're already throwing all the user details and the entire contents of their comment
+		// at Akismet, of course.)
+
+		// https://akismet.com/development/api/#comment-check
+		// "This data is highly useful to Akismet. How the submitted content interacts with the server can
+		// be very telling, so please include as much of it as possible."
+		static $server_vars = array(
+			// TODO: Use a blacklist for sensitive server-related stuff, rather than a whitelist. It'll
+			// be more friendly for other people's setups, and the code will be shorter.
+			'AUTH_TYPE',
+			'GATEWAY_INTERFACE',
+			'HTTPS',
+			'HTTP_ACCEPT',
+			'HTTP_ACCEPT_CHARSET',
+			'HTTP_ACCEPT_ENCODING',
+			'HTTP_ACCEPT_LANGUAGE',
+			'HTTP_CONNECTION',
+			'HTTP_HOST',
+			'HTTP_REFERER',
+			'HTTP_USER_AGENT',
+			'ORIG_PATH_INFO',
+			'PATH_INFO',
+			'PATH_TRANSLATED',
+			'PHP_AUTH_DIGEST',
+			'PHP_AUTH_PW',
+			'PHP_SELF',
+			'PHP_AUTH_USER',
+			'QUERY_STRING',
+			'REDIRECT_REMOTE_USER',
+			'REMOTE_ADDR',
+			'REMOTE_HOST',
+			'REMOTE_PORT',
+			'REMOTE_USER',
+			'REQUEST_METHOD',
+			'REQUEST_SCHEME',
+			'REQUEST_TIME',
+			'REQUEST_TIME_FLOAT',
+			'REQUEST_URI',
+			'SCRIPT_FILENAME',
+			'SCRIPT_NAME',
+			'SCRIPT_URI',
+			'SCRIPT_URL',
+			'SERVER_ADDR',
+			'SERVER_NAME',
+			'SERVER_PORT',
+			'SERVER_PROTOCOL',
+			'SERVER_SIGNATURE',
+			'SERVER_SOFTWARE',
+			'USER',
+		);
+
+		// Try to recreate $_SERVER.
+		foreach ($server_vars as $var)
+		{
+			$value = $this->request->server($var, null);
+			if ($value !== null)
+			{
+				$this->server_vars[$var] = $value;
+			}
+		}
 	}
 }

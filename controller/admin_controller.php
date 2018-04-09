@@ -102,16 +102,16 @@ class admin_controller
 				trigger_error('FORM_INVALID');
 			}
 
-			if ($this->verify_key($this->request->variable('api_key', '')))
+			if (!$this->verify_key($this->request->variable('api_key', '')))
 			{
-				$this->save_settings();
-
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SETTING_CHANGED');
-
-				trigger_error($this->language->lang('ACP_AKISMET_SETTING_SAVED') . adm_back_link($this->u_action));
+				trigger_error($this->language->lang('ACP_AKISMET_API_KEY_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			trigger_error($this->language->lang('ACP_AKISMET_API_KEY_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			$this->save_settings();
+
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SETTING_CHANGED');
+
+			trigger_error($this->language->lang('ACP_AKISMET_SETTING_SAVED') . adm_back_link($this->u_action));
 		}
 
 		$this->template->assign_vars(array(
