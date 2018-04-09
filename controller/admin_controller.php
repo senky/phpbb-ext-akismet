@@ -146,7 +146,7 @@ class admin_controller
 
 		$sql = 'SELECT group_id, group_type, group_name
 				FROM ' . $this->groups_table . '
-				WHERE (group_type <> ' . GROUP_SPECIAL . " OR group_name = 'NEWLY_REGISTERED') " ;
+				WHERE (group_type <> ' . GROUP_SPECIAL . " OR group_name = 'NEWLY_REGISTERED') ";
 		$result = $this->db->sql_query($sql);
 
 		$s_group_options = '';
