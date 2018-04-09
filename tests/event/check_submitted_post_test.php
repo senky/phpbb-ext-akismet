@@ -81,11 +81,11 @@ class check_submitted_post_test extends main_listener_base
 		$dispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
 		$dispatcher->addListener('core.posting_modify_submit_post_before', array($this->get_listener(), 'check_submitted_post'));
 		
-		// Set username, user posts, skip_check_after_n_posts and Akismet client
+		// Set username, user posts, phpbb_akismet_api_key and skip_check_after_n_posts
 		$this->user->data['username'] = $username;
 		$this->user->data['user_posts'] = $user_posts;
+		$this->config['phpbb_akismet_api_key'] = 'abcdef';
 		$this->config['phpbb_akismet_skip_check_after_n_posts'] = 5;
-		$this->phpbb_container->set('phpbb.akismet.client', new \phpbb\akismet\tests\mock\akismet_mock($blatant));
 
 		$this->auth->expects($this->at(0))
 			->method('acl_getf_global')
@@ -151,11 +151,7 @@ class check_submitted_post_test extends main_listener_base
 		$dispatcher->addListener('core.posting_modify_submit_post_before', array($this->get_listener(), 'check_submitted_post'));
 
 		// This is the same as test_post_check except because we don't have an Akismet
-		// object set up, every check should quietly pass (with no exceptions, but a
-		// bit of gentle logging.
-		$this->log->expects($this->once())
-			->method('add')
-			->with($this->equalTo('critical'));
+		// object set up, every check should quietly pass (with no exceptions)
 
 		// Event data
 		$data = array(

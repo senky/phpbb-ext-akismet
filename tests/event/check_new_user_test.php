@@ -18,6 +18,7 @@ class check_new_user_test extends main_listener_base
 			array(
 				123,
 				array(
+					'phpbb_akismet_api_key'	=> 'abcdef',
 					'phpbb_akismet_check_registrations' => true
 				), // Config
 				'viagra-test-123', // User name being registered
@@ -29,6 +30,7 @@ class check_new_user_test extends main_listener_base
 			array(
 				124,
 				array(
+					'phpbb_akismet_api_key'	=> 'abcdef',
 					'phpbb_akismet_check_registrations' => true
 				), // Config
 				'viagra-test-123', // User name being registered
@@ -40,6 +42,7 @@ class check_new_user_test extends main_listener_base
 			array(
 				125,
 				array(
+					'phpbb_akismet_api_key'	=> 'abcdef',
 					'phpbb_akismet_check_registrations' => true,
 					'phpbb_akismet_add_registering_spammers_to_group' => 234
 				), // Config
@@ -52,6 +55,7 @@ class check_new_user_test extends main_listener_base
 			array(
 				126,
 				array(
+					'phpbb_akismet_api_key'	=> 'abcdef',
 					'phpbb_akismet_check_registrations' => true,
 					'phpbb_akismet_add_registering_spammers_to_group' => 234
 				), // Config
@@ -64,6 +68,7 @@ class check_new_user_test extends main_listener_base
 			array(
 				127,
 				array(
+					'phpbb_akismet_api_key'	=> 'abcdef',
 					'phpbb_akismet_check_registrations' => false, // Not configured to check registrations...
 					'phpbb_akismet_add_registering_spammers_to_group' => 234,
 					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 235
@@ -77,6 +82,7 @@ class check_new_user_test extends main_listener_base
 			array(
 				128,
 				array(
+					'phpbb_akismet_api_key'	=> 'abcdef',
 					'phpbb_akismet_check_registrations' => true,
 					'phpbb_akismet_add_registering_spammers_to_group' => 234,
 					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 235
@@ -90,6 +96,7 @@ class check_new_user_test extends main_listener_base
 			array(
 				129,
 				array(
+					'phpbb_akismet_api_key'	=> 'abcdef',
 					'phpbb_akismet_check_registrations' => true,
 					'phpbb_akismet_add_registering_spammers_to_group' => 234,
 					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 235
@@ -111,17 +118,19 @@ class check_new_user_test extends main_listener_base
 		// Initiate DB
 		$db = $this->new_dbal();
 
+		// Switch to blatant
+		$this->akismet = new \phpbb\akismet\tests\mock\akismet_mock($blatant);
+
 		// Subscribe our method
 		$dispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
 		$dispatcher->addListener('core.user_add_after', array($this->get_listener(), 'check_new_user'));
 
-		// Set config values, username and Akismet client
+		// Set config values and username
 		foreach ($config as $name => $value)
 		{
 			$this->config->set($name, $value);
 		}
 		$this->user->data['username'] = $username;
-		$this->phpbb_container->set('phpbb.akismet.client', new \phpbb\akismet\tests\mock\akismet_mock($blatant));
 
 		// Set expectations
 		if (!$should_pass)

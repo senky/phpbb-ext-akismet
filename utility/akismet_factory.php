@@ -21,46 +21,29 @@ class akismet_factory
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\log\log_interface */
-	protected $log;
-
-	/** @var \phpbb\user */
-	protected $user;
-
-	/** @var string */
-	protected $akismet_api_key;
-
 	/**
 	 * Constructor
 	 *
 	 * Lightweight initialisation of the API key and user ID.
 	 * Heavy lifting is done only if the user actually tries
-	 * to post a message.
+	 * to post a message, new user tries to register or moderator
+	 * approves post (we submit ham to Akismet service).
 	 *
-	 * @param \phpbb\config\config $config
-	 * @param \phpbb\log\log_interface $log
-	 * @param \phpbb\user $user
+	 * @param \phpbb\config\config		$config	phpBB Config class
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\user $user)
+	public function __construct(\phpbb\config\config $config)
 	{
 		$this->config = $config;
-		$this->log = $log;
-		$this->user = $user;
-
-		if (!empty($config['phpbb_akismet_api_key']))
-		{
-			$this->akismet_api_key = $config['phpbb_akismet_api_key'];
-		}
 	}
 
 	/**
 	 * Initialize Akismet client with board-specific data
 	 *
-	 * @return boolean|\Gothick\AkismetClient\Client	False if Akismet key is empty; Akismet client otherwise
+	 * @return \Gothick\AkismetClient\Client
 	 * @throws \Gothick\AkismetClient\AkismetException
 	 */
-	public function createAkismet()
+	public function create_akismet()
 	{
-		return new \Gothick\AkismetClient\Client(generate_board_url(), 'phpBB', $this->config['version'], $this->akismet_api_key);
+		return new \Gothick\AkismetClient\Client(generate_board_url(), 'phpBB', $this->config['version'], $this->config['phpbb_akismet_api_key']);
 	}
 }

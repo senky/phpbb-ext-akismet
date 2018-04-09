@@ -10,8 +10,6 @@
 
 namespace phpbb\akismet\controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
 * Admin controller
 */
@@ -44,8 +42,8 @@ class admin_controller
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
-	protected $phpbb_container;
+	/** @var \Gothick\AkismetClient\Client */
+	protected $akismet;
 
 	/** @var string */
 	protected $php_ext;
@@ -69,12 +67,12 @@ class admin_controller
 	 * @param \phpbb\language\language          $language     		Language object
 	 * @param \phpbb\group\helper               $group_helper 		Group helper object
 	 * @param \phpbb\db\driver\driver_interface $db           		Database drive
-	 * @param ContainerInterface       		    $phpbb_container	phpBB Service Container
+	 * @param \Gothick\AkismetClient\Client     $akismet			Akismet client class
 	 * @param string                            $php_ext
 	 * @param string                            $phpbb_root_path
 	 * @param string							$groups_table
 	 */
-	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\log\log_interface $log, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\group\helper $group_helper, \phpbb\db\driver\driver_interface $db, ContainerInterface $phpbb_container, $php_ext, $phpbb_root_path, $groups_table)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\log\log_interface $log, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\group\helper $group_helper, \phpbb\db\driver\driver_interface $db, \Gothick\AkismetClient\Client $akismet, $php_ext, $phpbb_root_path, $groups_table)
 	{
 		$this->request = $request;
 		$this->template = $template;
@@ -84,7 +82,7 @@ class admin_controller
 		$this->language = $language;
 		$this->group_helper = $group_helper;
 		$this->db = $db;
-		$this->phpbb_container = $phpbb_container;
+		$this->akismet = $akismet;
 		$this->php_ext = $php_ext;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->groups_table = $groups_table;
@@ -104,16 +102,16 @@ class admin_controller
 				trigger_error('FORM_INVALID');
 			}
 
-			if ($this->verify_key($this->request->variable('api_key', '')))
+			if (!$this->verify_key($this->request->variable('api_key', '')))
 			{
-				$this->save_settings();
-
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SETTING_CHANGED');
-
-				trigger_error($this->language->lang('ACP_AKISMET_SETTING_SAVED') . adm_back_link($this->u_action));
+				trigger_error($this->language->lang('ACP_AKISMET_API_KEY_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			trigger_error($this->language->lang('ACP_AKISMET_API_KEY_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			$this->save_settings();
+
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_SETTING_CHANGED');
+
+			trigger_error($this->language->lang('ACP_AKISMET_SETTING_SAVED') . adm_back_link($this->u_action));
 		}
 
 		$this->template->assign_vars(array(
@@ -177,12 +175,9 @@ class admin_controller
 
 	protected function verify_key($key)
 	{
-		/** @var \Gothick\AkismetClient\Client $akismet */
-		$akismet = $this->phpbb_container->get('phpbb.akismet.client');
-
 		try
 		{
-			$result = $akismet->verifyKey($key);
+			$result = $this->akismet->verifyKey($key);
 			return $result->isValid();
 		}
 		catch (\Gothick\AkismetClient\AkismetException $e)

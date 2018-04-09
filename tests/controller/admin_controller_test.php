@@ -55,9 +55,6 @@ namespace phpbb\akismet\tests\controller
 		/** @var \phpbb\db\driver\driver_interface|\PHPUnit_Framework_MockObject_MockObject */
 		protected $db;
 
-		/** @var \phpbb_mock_event_dispatcher */
-		protected $phpbb_container;
-
 		/** @var string */
 		protected $php_ext;
 
@@ -69,6 +66,9 @@ namespace phpbb\akismet\tests\controller
 
 		/** @var string */
 		protected $u_action;
+
+		/** @var string */
+		protected $key_verified;
 
 		public function setUp()
 		{
@@ -85,12 +85,12 @@ namespace phpbb\akismet\tests\controller
 			$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 			$this->group_helper = $this->getMockBuilder(\phpbb\group\helper::class)->disableOriginalConstructor()->getMock();
 			$this->db = $this->getMockBuilder(\phpbb\db\driver\driver_interface::class)->getMock();
-			$this->phpbb_container = new \phpbb_mock_container_builder();
 			$this->php_ext = $phpEx;
 			$this->root_path = $phpbb_root_path;
 			$this->groups_table = 'phpbb_groups';
 
-			$this->u_action = $phpbb_root_path . 'adm/index.php?i=-phpbb-akismet-acp-akismet_module&mode=settings';;
+			$this->u_action = $phpbb_root_path . 'adm/index.php?i=-phpbb-akismet-acp-akismet_module&mode=settings';
+			$this->key_verified = true;
 		}
 
 		public function get_controller()
@@ -104,7 +104,7 @@ namespace phpbb\akismet\tests\controller
 				$this->language,
 				$this->group_helper,
 				$this->db,
-				$this->phpbb_container,
+				new \phpbb\akismet\tests\mock\akismet_mock(false, $this->key_verified),
 				$this->php_ext,
 				$this->root_path,
 				$this->groups_table
@@ -144,10 +144,9 @@ namespace phpbb\akismet\tests\controller
 		 */
 		public function test_invalid_api_key()
 		{
+			$this->key_verified = false;
 			$controller = $this->get_controller();
 			self::$check_form_key_result = true;
-
-			$this->phpbb_container->set('phpbb.akismet.client', new \phpbb\akismet\tests\mock\akismet_mock());
 
 			$this->request->method('is_set_post')
 				->with('submit')
@@ -163,10 +162,9 @@ namespace phpbb\akismet\tests\controller
 		 */
 		public function test_save_settings_logged()
 		{
+			$this->key_verified = true;
 			$controller = $this->get_controller();
 			self::$check_form_key_result = true;
-
-			$this->phpbb_container->set('phpbb.akismet.client', new \phpbb\akismet\tests\mock\akismet_mock(false, true));
 
 			$this->request->method('is_set_post')
 				->with('submit')
@@ -186,6 +184,7 @@ namespace phpbb\akismet\tests\controller
 		 */
 		public function test_assign_vars()
 		{
+			$this->key_verified = true;
 			$controller = $this->get_controller();
 
 			$this->config['phpbb_akismet_api_key'] = 'IM_AN_API_KEY_HONEST_GUV_123';
