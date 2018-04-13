@@ -10,9 +10,9 @@
 
 namespace phpbb\akismet\event;
 
-/**
- * @ignore
- */
+use Gothick\AkismetClient\Result\CommentCheckResult;
+use Gothick\AkismetClient\Result\SubmitHamResult;
+use Gothick\AkismetClient\Result\SubmitSpamResult;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -341,10 +341,11 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * Perform an API call to Akismet server
 	 *
-	 * @param	string	$method			Method name of the call
+	 * @param	string	$method			Method name of the call (commentCheck|submitSpam|submitHam)
 	 * @param	array	$params			Parameters for the call
 	 * @param	boolean	$with_server	Should we send server info as well?
-	 * @return	boolean|\Gothick\AkismetClient\Result\ClientResult	False on failure; result class of defined method otherwise
+	 * @return 	boolean|SubmitSpamResult|SubmitHamResult|CommentCheckResult
+	 * 									False on failure; result class of defined method otherwise
 	 */
 	protected function akismet_call($method, $params, $with_server = true)
 	{
