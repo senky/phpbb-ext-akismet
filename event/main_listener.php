@@ -294,7 +294,7 @@ class main_listener implements EventSubscriberInterface
 		);
 
 		$check = $this->akismet_call('commentCheck', $params);
-		if ($check !== false)
+		if ($check !== null)
 		{
 			$result['is_spam'] = $check->isSpam();
 			$result['is_blatant_spam'] = $check->isBlatantSpam();
@@ -349,7 +349,7 @@ class main_listener implements EventSubscriberInterface
 		// Call will definitely not pass without API key, don't even try
 		if (empty($this->config['phpbb_akismet_api_key']))
 		{
-			return false;
+			return null;
 		}
 
 		try
@@ -362,7 +362,7 @@ class main_listener implements EventSubscriberInterface
 			$this->log->add('critical', $this->user->data['username'], $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
