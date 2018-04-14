@@ -10,9 +10,6 @@
 
 namespace phpbb\akismet\event;
 
-use Gothick\AkismetClient\Result\CommentCheckResult;
-use Gothick\AkismetClient\Result\SubmitHamResult;
-use Gothick\AkismetClient\Result\SubmitSpamResult;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -344,7 +341,7 @@ class main_listener implements EventSubscriberInterface
 	 * @param	string	$method			Method name of the call (commentCheck|submitSpam|submitHam)
 	 * @param	array	$params			Parameters for the call
 	 * @param	boolean	$with_server	Should we send server info as well?
-	 * @return 	boolean|SubmitSpamResult|SubmitHamResult|CommentCheckResult
+	 * @return 	\Gothick\AkismetClient\Result\SubmitSpamResult|\Gothick\AkismetClient\Result\SubmitHamResult|\Gothick\AkismetClient\Result\CommentCheckResult|null
 	 * 									False on failure; result class of defined method otherwise
 	 */
 	protected function akismet_call($method, $params, $with_server = true)
