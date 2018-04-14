@@ -342,7 +342,7 @@ class main_listener implements EventSubscriberInterface
 	 * @param	array	$params			Parameters for the call
 	 * @param	boolean	$with_server	Should we send server info as well?
 	 * @return 	\Gothick\AkismetClient\Result\SubmitSpamResult|\Gothick\AkismetClient\Result\SubmitHamResult|\Gothick\AkismetClient\Result\CommentCheckResult|null
-	 * 									False on failure; result class of defined method otherwise
+	 * 									Returns class of defined method, null otherwise
 	 */
 	protected function akismet_call($method, $params, $with_server = true)
 	{
