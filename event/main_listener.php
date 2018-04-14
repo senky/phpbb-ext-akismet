@@ -386,7 +386,7 @@ class main_listener implements EventSubscriberInterface
 			// https://akismet.com/development/api/#comment-check
 			// "This data is highly useful to Akismet. How the submitted content interacts with the server can
 			// be very telling, so please include as much of it as possible."
-			static $server_vars = array(
+			$server_vars = array(
 				// TODO: Use a blacklist for sensitive server-related stuff, rather than a whitelist. It'll
 				// be more friendly for other people's setups, and the code will be shorter.
 				'AUTH_TYPE',
