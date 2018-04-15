@@ -10,9 +10,6 @@
 
 namespace phpbb\akismet\event;
 
-/**
- * @ignore
- */
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -297,7 +294,7 @@ class main_listener implements EventSubscriberInterface
 		);
 
 		$check = $this->akismet_call('commentCheck', $params);
-		if ($check !== false)
+		if ($check !== null)
 		{
 			$result['is_spam'] = $check->isSpam();
 			$result['is_blatant_spam'] = $check->isBlatantSpam();
@@ -341,17 +338,18 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * Perform an API call to Akismet server
 	 *
-	 * @param	string	$method			Method name of the call
+	 * @param	string	$method			Method name of the call (commentCheck|submitSpam|submitHam)
 	 * @param	array	$params			Parameters for the call
 	 * @param	boolean	$with_server	Should we send server info as well?
-	 * @return	boolean|\Gothick\AkismetClient\Result\ClientResult	False on failure; result class of defined method otherwise
+	 * @return 	\Gothick\AkismetClient\Result\SubmitSpamResult|\Gothick\AkismetClient\Result\SubmitHamResult|\Gothick\AkismetClient\Result\CommentCheckResult|null
+	 * 									Returns class of defined method, null otherwise
 	 */
 	protected function akismet_call($method, $params, $with_server = true)
 	{
 		// Call will definitely not pass without API key, don't even try
 		if (empty($this->config['phpbb_akismet_api_key']))
 		{
-			return false;
+			return null;
 		}
 
 		try
@@ -364,7 +362,7 @@ class main_listener implements EventSubscriberInterface
 			$this->log->add('critical', $this->user->data['username'], $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
@@ -374,73 +372,73 @@ class main_listener implements EventSubscriberInterface
 	 */
 	protected function get_server_vars()
 	{
-		if (!empty($this->server_vars))
+		if (empty($this->server_vars))
 		{
-			return $this->server_vars;
-		}
+			// We can't just pass $_SERVER in to our Akismet client as phpBB turns off super globals (which is,
+			// of course, fair enough.) Interrogate our request object instead, grabbing as many relevant
+			// things as we can, excluding anything that might leak anything sensitive to Akismet (bear in
+			// mind we're already throwing all the user details and the entire contents of their comment
+			// at Akismet, of course.)
 
-		// We can't just pass $_SERVER in to our Akismet client as phpBB turns off super globals (which is,
-		// of course, fair enough.) Interrogate our request object instead, grabbing as many relevant
-		// things as we can, excluding anything that might leak anything sensitive to Akismet (bear in
-		// mind we're already throwing all the user details and the entire contents of their comment
-		// at Akismet, of course.)
+			// https://akismet.com/development/api/#comment-check
+			// "This data is highly useful to Akismet. How the submitted content interacts with the server can
+			// be very telling, so please include as much of it as possible."
+			$server_vars = array(
+				// TODO: Use a blacklist for sensitive server-related stuff, rather than a whitelist. It'll
+				// be more friendly for other people's setups, and the code will be shorter.
+				'AUTH_TYPE',
+				'GATEWAY_INTERFACE',
+				'HTTPS',
+				'HTTP_ACCEPT',
+				'HTTP_ACCEPT_CHARSET',
+				'HTTP_ACCEPT_ENCODING',
+				'HTTP_ACCEPT_LANGUAGE',
+				'HTTP_CONNECTION',
+				'HTTP_HOST',
+				'HTTP_REFERER',
+				'HTTP_USER_AGENT',
+				'ORIG_PATH_INFO',
+				'PATH_INFO',
+				'PATH_TRANSLATED',
+				'PHP_AUTH_DIGEST',
+				'PHP_AUTH_PW',
+				'PHP_SELF',
+				'PHP_AUTH_USER',
+				'QUERY_STRING',
+				'REDIRECT_REMOTE_USER',
+				'REMOTE_ADDR',
+				'REMOTE_HOST',
+				'REMOTE_PORT',
+				'REMOTE_USER',
+				'REQUEST_METHOD',
+				'REQUEST_SCHEME',
+				'REQUEST_TIME',
+				'REQUEST_TIME_FLOAT',
+				'REQUEST_URI',
+				'SCRIPT_FILENAME',
+				'SCRIPT_NAME',
+				'SCRIPT_URI',
+				'SCRIPT_URL',
+				'SERVER_ADDR',
+				'SERVER_NAME',
+				'SERVER_PORT',
+				'SERVER_PROTOCOL',
+				'SERVER_SIGNATURE',
+				'SERVER_SOFTWARE',
+				'USER',
+			);
 
-		// https://akismet.com/development/api/#comment-check
-		// "This data is highly useful to Akismet. How the submitted content interacts with the server can
-		// be very telling, so please include as much of it as possible."
-		static $server_vars = array(
-			// TODO: Use a blacklist for sensitive server-related stuff, rather than a whitelist. It'll
-			// be more friendly for other people's setups, and the code will be shorter.
-			'AUTH_TYPE',
-			'GATEWAY_INTERFACE',
-			'HTTPS',
-			'HTTP_ACCEPT',
-			'HTTP_ACCEPT_CHARSET',
-			'HTTP_ACCEPT_ENCODING',
-			'HTTP_ACCEPT_LANGUAGE',
-			'HTTP_CONNECTION',
-			'HTTP_HOST',
-			'HTTP_REFERER',
-			'HTTP_USER_AGENT',
-			'ORIG_PATH_INFO',
-			'PATH_INFO',
-			'PATH_TRANSLATED',
-			'PHP_AUTH_DIGEST',
-			'PHP_AUTH_PW',
-			'PHP_SELF',
-			'PHP_AUTH_USER',
-			'QUERY_STRING',
-			'REDIRECT_REMOTE_USER',
-			'REMOTE_ADDR',
-			'REMOTE_HOST',
-			'REMOTE_PORT',
-			'REMOTE_USER',
-			'REQUEST_METHOD',
-			'REQUEST_SCHEME',
-			'REQUEST_TIME',
-			'REQUEST_TIME_FLOAT',
-			'REQUEST_URI',
-			'SCRIPT_FILENAME',
-			'SCRIPT_NAME',
-			'SCRIPT_URI',
-			'SCRIPT_URL',
-			'SERVER_ADDR',
-			'SERVER_NAME',
-			'SERVER_PORT',
-			'SERVER_PROTOCOL',
-			'SERVER_SIGNATURE',
-			'SERVER_SOFTWARE',
-			'USER',
-		);
-
-		// Try to recreate $_SERVER.
-		foreach ($server_vars as $var)
-		{
-			$value = $this->request->server($var, null);
-			if ($value !== null)
+			// Try to recreate $_SERVER.
+			foreach ($server_vars as $var)
 			{
-				$this->server_vars[$var] = $value;
+				$value = $this->request->server($var, null);
+				if ($value !== null)
+				{
+					$this->server_vars[$var] = $value;
+				}
 			}
 		}
+
+		return $this->server_vars;
 	}
 }
