@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Advertisement management Build Script" description="Builds an extension.zip from a git repository" default="all">
-	<property name="vendor-name" value="phpbb" />
+<project name="Akismet Build Script" description="Builds an extension.zip from a git repository" default="all">
+	<property name="vendor-name" value="senky" />
 	<property name="extension-name" value="akismet" />
 	<!--
 	Only set this to "true" if you have dependencies in the composer.json,
 	otherwise use "false".
 	-->
-	<property name="has-dependencies" value="false" />
+	<property name="has-dependencies" value="true" />
 
 	<target name="clean-package">
 		<!--
@@ -69,7 +69,7 @@
 		<if>
 			<equals arg1="${has-dependencies}" arg2="1" />
 			<then>
-				<exec dir="${package-directory}" command="php composer.phar install --no-dev"
+				<exec dir="${package-directory}" command="composer install --no-dev"
 					  checkreturn="true" />
 			</then>
 		</if>
