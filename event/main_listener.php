@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\event;
+namespace senky\akismet\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -100,7 +100,7 @@ class main_listener implements EventSubscriberInterface
 		}
 
 		// Skip the Akismet check for users with more than defined posts
-		if ($this->config['phpbb_akismet_skip_check_after_n_posts'] != 0 && $this->user->data['user_posts'] > $this->config['phpbb_akismet_skip_check_after_n_posts'])
+		if ($this->config['senky_akismet_skip_check_after_n_posts'] != 0 && $this->user->data['user_posts'] > $this->config['senky_akismet_skip_check_after_n_posts'])
 		{
 			return;
 		}
@@ -113,7 +113,7 @@ class main_listener implements EventSubscriberInterface
 			$data['force_approved_state'] = ITEM_UNAPPROVED;
 			// This will be used by our notification event listener to
 			// figure out that the post was moderated by Akismet.
-			$data['phpbb_akismet_unapproved'] = true;
+			$data['senky_akismet_unapproved'] = true;
 			$event['data'] = $data;
 
 			$this->log_mark_post_spam($event['mode'], $data);
@@ -127,7 +127,7 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function check_new_user($event)
 	{
-		if ($this->config['phpbb_akismet_check_registrations'])
+		if ($this->config['senky_akismet_check_registrations'])
 		{
 			$user_id = $event['user_id']; // Can't use $this->user->data['user_id'] as there isn't an actual user logged in during registration, of course.
 			$user_row = $event['user_row'];
@@ -146,12 +146,12 @@ class main_listener implements EventSubscriberInterface
 				$log_message = $result['is_blatant_spam'] ? 'AKISMET_LOG_BLATANT_SPAMMER_REGISTRATION' : 'AKISMET_LOG_SPAMMER_REGISTRATION';
 				$this->log->add('mod', $user_id, $this->user->ip, $log_message, false, array($user_row['username']));
 
-				if ($group_id = $this->config['phpbb_akismet_add_registering_spammers_to_group'])
+				if ($group_id = $this->config['senky_akismet_add_registering_spammers_to_group'])
 				{
 					$this->group_user_add($group_id, $user_id);
 				}
 
-				if ($result['is_blatant_spam'] && $group_id = $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
+				if ($result['is_blatant_spam'] && $group_id = $this->config['senky_akismet_add_registering_blatant_spammers_to_group'])
 				{
 					$this->group_user_add($group_id, $user_id);
 				}
@@ -172,9 +172,9 @@ class main_listener implements EventSubscriberInterface
 		if ($event['notification_type_name'] === 'notification.type.post_in_queue' || $event['notification_type_name'] === 'notification.type.topic_in_queue')
 		{
 			$data = $event['data'];
-			if (isset($data['phpbb_akismet_unapproved']))
+			if (isset($data['senky_akismet_unapproved']))
 			{
-				$event['notification_type_name'] = 'phpbb.akismet.' . $event['notification_type_name'];
+				$event['notification_type_name'] = 'senky.akismet.' . $event['notification_type_name'];
 			}
 			$event['data'] = $data;
 		}
@@ -188,15 +188,15 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function group_deleted($event)
 	{
-		if ($event['group_id'] == $this->config['phpbb_akismet_add_registering_spammers_to_group'])
+		if ($event['group_id'] == $this->config['senky_akismet_add_registering_spammers_to_group'])
 		{
-			$this->config->set('phpbb_akismet_add_registering_spammers_to_group', 0);
+			$this->config->set('senky_akismet_add_registering_spammers_to_group', 0);
 			$this->log_disable_group_add($event['group_name']);
 		}
 
-		if ($event['group_id'] == $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'])
+		if ($event['group_id'] == $this->config['senky_akismet_add_registering_blatant_spammers_to_group'])
 		{
-			$this->config->set('phpbb_akismet_add_registering_blatant_spammers_to_group', 0);
+			$this->config->set('senky_akismet_add_registering_blatant_spammers_to_group', 0);
 			$this->log_disable_group_add($event['group_name']);
 		}
 	}
@@ -347,7 +347,7 @@ class main_listener implements EventSubscriberInterface
 	protected function akismet_call($method, $params, $with_server = true)
 	{
 		// Call will definitely not pass without API key, don't even try
-		if (empty($this->config['phpbb_akismet_api_key']))
+		if (empty($this->config['senky_akismet_api_key']))
 		{
 			return null;
 		}

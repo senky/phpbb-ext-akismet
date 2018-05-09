@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\event;
+namespace senky\akismet\tests\event;
 
 class check_new_user_test extends main_listener_base
 {
@@ -18,8 +18,8 @@ class check_new_user_test extends main_listener_base
 			array(
 				123,
 				array(
-					'phpbb_akismet_api_key'	=> 'abcdef',
-					'phpbb_akismet_check_registrations' => true
+					'senky_akismet_api_key'	=> 'abcdef',
+					'senky_akismet_check_registrations' => true
 				), // Config
 				'viagra-test-123', // User name being registered
 				false, // "Blatant" spammer
@@ -30,8 +30,8 @@ class check_new_user_test extends main_listener_base
 			array(
 				124,
 				array(
-					'phpbb_akismet_api_key'	=> 'abcdef',
-					'phpbb_akismet_check_registrations' => true
+					'senky_akismet_api_key'	=> 'abcdef',
+					'senky_akismet_check_registrations' => true
 				), // Config
 				'viagra-test-123', // User name being registered
 				true, // "Blatant" spammer
@@ -42,9 +42,9 @@ class check_new_user_test extends main_listener_base
 			array(
 				125,
 				array(
-					'phpbb_akismet_api_key'	=> 'abcdef',
-					'phpbb_akismet_check_registrations' => true,
-					'phpbb_akismet_add_registering_spammers_to_group' => 234
+					'senky_akismet_api_key'	=> 'abcdef',
+					'senky_akismet_check_registrations' => true,
+					'senky_akismet_add_registering_spammers_to_group' => 234
 				), // Config
 				'viagra-test-123', // User name being registered
 				false, // "Blatant" spammer
@@ -55,9 +55,9 @@ class check_new_user_test extends main_listener_base
 			array(
 				126,
 				array(
-					'phpbb_akismet_api_key'	=> 'abcdef',
-					'phpbb_akismet_check_registrations' => true,
-					'phpbb_akismet_add_registering_spammers_to_group' => 234
+					'senky_akismet_api_key'	=> 'abcdef',
+					'senky_akismet_check_registrations' => true,
+					'senky_akismet_add_registering_spammers_to_group' => 234
 				), // Config
 				'viagra-test-123', // User name being registered
 				true, // "Blatant" spammer
@@ -68,10 +68,10 @@ class check_new_user_test extends main_listener_base
 			array(
 				127,
 				array(
-					'phpbb_akismet_api_key'	=> 'abcdef',
-					'phpbb_akismet_check_registrations' => false, // Not configured to check registrations...
-					'phpbb_akismet_add_registering_spammers_to_group' => 234,
-					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 235
+					'senky_akismet_api_key'	=> 'abcdef',
+					'senky_akismet_check_registrations' => false, // Not configured to check registrations...
+					'senky_akismet_add_registering_spammers_to_group' => 234,
+					'senky_akismet_add_registering_blatant_spammers_to_group' => 235
 				),
 				'viagra-test-123',
 				true,
@@ -82,10 +82,10 @@ class check_new_user_test extends main_listener_base
 			array(
 				128,
 				array(
-					'phpbb_akismet_api_key'	=> 'abcdef',
-					'phpbb_akismet_check_registrations' => true,
-					'phpbb_akismet_add_registering_spammers_to_group' => 234,
-					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 235
+					'senky_akismet_api_key'	=> 'abcdef',
+					'senky_akismet_check_registrations' => true,
+					'senky_akismet_add_registering_spammers_to_group' => 234,
+					'senky_akismet_add_registering_blatant_spammers_to_group' => 235
 				),
 				'matt',
 				false,
@@ -96,10 +96,10 @@ class check_new_user_test extends main_listener_base
 			array(
 				129,
 				array(
-					'phpbb_akismet_api_key'	=> 'abcdef',
-					'phpbb_akismet_check_registrations' => true,
-					'phpbb_akismet_add_registering_spammers_to_group' => 234,
-					'phpbb_akismet_add_registering_blatant_spammers_to_group' => 235
+					'senky_akismet_api_key'	=> 'abcdef',
+					'senky_akismet_check_registrations' => true,
+					'senky_akismet_add_registering_spammers_to_group' => 234,
+					'senky_akismet_add_registering_blatant_spammers_to_group' => 235
 				),
 				'viagra-test-123',
 				true, // Blatant spammer
@@ -119,7 +119,7 @@ class check_new_user_test extends main_listener_base
 		$db = $this->new_dbal();
 
 		// Switch to blatant
-		$this->akismet = new \phpbb\akismet\tests\mock\akismet_mock($blatant);
+		$this->akismet = new \senky\akismet\tests\mock\akismet_mock($blatant);
 
 		// Subscribe our method
 		$dispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
@@ -185,7 +185,7 @@ class check_new_user_test extends main_listener_base
 		$dispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
 		$dispatcher->addListener('core.user_add_after', array($this->get_listener(), 'check_new_user'));
 
-		if ($config['phpbb_akismet_check_registrations'])
+		if ($config['senky_akismet_check_registrations'])
 		{
 			// If we're configured to check registrations, then I expect us to fail with
 			// an exception, as there'll be no Akismet client configured.

@@ -25,10 +25,10 @@ class akismet_module_test extends \phpbb_test_case
 		$this->extension_manager = new \phpbb_mock_extension_manager(
 			$phpbb_root_path,
 			array(
-				'phpbb/akismet' => array(
-					'ext_name' => 'phpbb/akismet',
+				'senky/akismet' => array(
+					'ext_name' => 'senky/akismet',
 					'ext_active' => '1',
-					'ext_path' => 'ext/phpbb/akismet/',
+					'ext_path' => 'ext/senky/akismet/',
 				),
 			));
 		$phpbb_extension_manager = $this->extension_manager;
@@ -48,13 +48,13 @@ class akismet_module_test extends \phpbb_test_case
 	public function test_module_info()
 	{
 		$this->assertEquals(array(
-			'\\phpbb\\akismet\\acp\\akismet_module' => array(
-				'filename'	=> '\\phpbb\\akismet\\acp\\akismet_module',
+			'\\senky\\akismet\\acp\\akismet_module' => array(
+				'filename'	=> '\\senky\\akismet\\acp\\akismet_module',
 				'title'		=> 'ACP_AKISMET_TITLE',
 				'modes'		=> array(
 					'settings'	=> array(
 						'title'	=> 'ACP_AKISMET_SETTINGS',
-						'auth'	=> 'ext_phpbb/akismet && acl_a_board',
+						'auth'	=> 'ext_senky/akismet && acl_a_board',
 						'cat'	=> array('ACP_AKISMET_TITLE')
 					),
 				),
@@ -67,7 +67,7 @@ class akismet_module_test extends \phpbb_test_case
 		return array(
 			// module_auth, expected result
 			array('ext_foo/bar', false),
-			array('ext_phpbb/akismet', true),
+			array('ext_senky/akismet', true),
 		);
 	}
 
@@ -101,7 +101,7 @@ class akismet_module_test extends \phpbb_test_case
 		$language = $this->getMockBuilder(\phpbb\language\language::class)
 			->disableOriginalConstructor()
 			->getMock();
-		$admin_controller = $this->getMockBuilder('\phpbb\akismet\controller\admin_controller')
+		$admin_controller = $this->getMockBuilder('\senky\akismet\controller\admin_controller')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -113,12 +113,12 @@ class akismet_module_test extends \phpbb_test_case
 
 		$language->expects($this->once())
 			->method('add_lang')
-			->with('akismet_acp', 'phpbb/akismet');
+			->with('akismet_acp', 'senky/akismet');
 
 		$phpbb_container
 			->expects($this->at(1))
 			->method('get')
-			->with('phpbb.akismet.admin.controller')
+			->with('senky.akismet.admin.controller')
 			->will($this->returnValue($admin_controller));
 
 		$admin_controller
@@ -126,6 +126,6 @@ class akismet_module_test extends \phpbb_test_case
 			->method('set_action');
 
 		$p_master = new p_master();
-		$p_master->load('acp', '\phpbb\akismet\acp\akismet_module', $mode);
+		$p_master->load('acp', '\senky\akismet\acp\akismet_module', $mode);
 	}
 }

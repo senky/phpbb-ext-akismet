@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\notification\type;
+namespace senky\akismet\notification\type;
 
 class post_in_queue extends \phpbb\notification\type\post_in_queue
 {
@@ -17,7 +17,7 @@ class post_in_queue extends \phpbb\notification\type\post_in_queue
 	 */
 	public function get_type()
 	{
-		return 'phpbb.akismet.notification.type.post_in_queue';
+		return 'senky.akismet.notification.type.post_in_queue';
 	}
 
 	/**
@@ -27,6 +27,6 @@ class post_in_queue extends \phpbb\notification\type\post_in_queue
 	 */
 	public function get_email_template()
 	{
-		return '@phpbb_akismet/post_in_queue';
+		return '@senky_akismet/post_in_queue';
 	}
 }

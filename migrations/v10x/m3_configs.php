@@ -7,7 +7,7 @@
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
-namespace phpbb\akismet\migrations\v10x;
+namespace senky\akismet\migrations\v10x;
 
 class m3_configs extends \phpbb\db\migration\migration
 {
@@ -16,7 +16,7 @@ class m3_configs extends \phpbb\db\migration\migration
 	 */
 	public function effectively_installed()
 	{
-		return $this->config->offsetExists('phpbb_akismet_api_key');
+		return $this->config->offsetExists('senky_akismet_api_key');
 	}
 
 	/**
@@ -24,7 +24,7 @@ class m3_configs extends \phpbb\db\migration\migration
 	 */
 	static public function depends_on()
 	{
-		return array('\phpbb\akismet\migrations\v10x\m2_notifications');
+		return array('\senky\akismet\migrations\v10x\m2_notifications');
 	}
 
 	/**
@@ -33,11 +33,11 @@ class m3_configs extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('config.add', array('phpbb_akismet_api_key', '')),
-			array('config.add', array('phpbb_akismet_check_registrations', 0)),
-			array('config.add', array('phpbb_akismet_add_registering_spammers_to_group', 0)),
-			array('config.add', array('phpbb_akismet_add_registering_blatant_spammers_to_group', 0)),
-			array('config.add', array('phpbb_akismet_skip_check_after_n_posts', 0)),
+			array('config.add', array('senky_akismet_api_key', '')),
+			array('config.add', array('senky_akismet_check_registrations', 0)),
+			array('config.add', array('senky_akismet_add_registering_spammers_to_group', 0)),
+			array('config.add', array('senky_akismet_add_registering_blatant_spammers_to_group', 0)),
+			array('config.add', array('senky_akismet_skip_check_after_n_posts', 0)),
 		);
 	}
 }

@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\factory;
+namespace senky\akismet\tests\factory;
 
 class main_controller_test extends \phpbb_test_case
 {
@@ -29,7 +29,7 @@ class main_controller_test extends \phpbb_test_case
 	{
 		$this->config['version'] = '1.0.0';
 
-		$factory = new \phpbb\akismet\utility\akismet_factory($this->config);
+		$factory = new \senky\akismet\utility\akismet_factory($this->config);
 		$this->assertNotFalse($factory->create_akismet());
 	}
 
@@ -38,10 +38,10 @@ class main_controller_test extends \phpbb_test_case
 	 */
 	public function test_factory_with_key()
 	{
-		$this->config['phpbb_akismet_api_key'] = 'abcdef';
+		$this->config['senky_akismet_api_key'] = 'abcdef';
 		$this->config['version'] = '1.2.3';
 
-		$factory = new \phpbb\akismet\utility\akismet_factory($this->config);
+		$factory = new \senky\akismet\utility\akismet_factory($this->config);
 		$akismet_client = $factory->create_akismet();
 		$this->assertInstanceOf(\Gothick\AkismetClient\Client::class, $akismet_client);
 	}

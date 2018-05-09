@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\event;
+namespace senky\akismet\tests\event;
 
 class main_listener_base extends \phpbb_database_test_case
 {
@@ -27,7 +27,7 @@ class main_listener_base extends \phpbb_database_test_case
 	/** @var \phpbb\auth\auth|\PHPUnit_Framework_MockObject_MockObject */
 	protected $auth;
 
-	/** @var \phpbb\akismet\tests\mock\akismet_mock */
+	/** @var \senky\akismet\tests\mock\akismet_mock */
 	protected $akismet;
 
 	/** @var string */
@@ -41,7 +41,7 @@ class main_listener_base extends \phpbb_database_test_case
 	 */
 	protected static function setup_extensions()
 	{
-		return array('phpbb/akismet');
+		return array('senky/akismet');
 	}
 
 	/**
@@ -66,7 +66,7 @@ class main_listener_base extends \phpbb_database_test_case
 		$this->config = new \phpbb\config\config(array());
 		$this->log = $this->getMockBuilder(\phpbb\log\dummy::class)->getMock();
 		$this->auth = $this->getMock(\phpbb\auth\auth::class);
-		$this->akismet = new \phpbb\akismet\tests\mock\akismet_mock();
+		$this->akismet = new \senky\akismet\tests\mock\akismet_mock();
 		$this->php_ext = $phpEx;
 		$this->root_path = $phpbb_root_path;
 
@@ -81,7 +81,7 @@ class main_listener_base extends \phpbb_database_test_case
 
 	protected function get_listener()
 	{
-		return new \phpbb\akismet\event\main_listener(
+		return new \senky\akismet\event\main_listener(
 			$this->user,
 			$this->request,
 			$this->config,

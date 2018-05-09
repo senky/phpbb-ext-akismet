@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\acp;
+namespace senky\akismet\acp;
 
 /**
  * ACP page for configuring Gothick Akismet: API key, Akismet, etc.
@@ -28,10 +28,10 @@ class akismet_module
 
 		/** @var \phpbb\language\language $language */
 		$language = $phpbb_container->get('language');
-		$language->add_lang('akismet_acp', 'phpbb/akismet');
+		$language->add_lang('akismet_acp', 'senky/akismet');
 
-		/* @var $admin_controller \phpbb\akismet\controller\admin_controller */
-		$admin_controller = $phpbb_container->get('phpbb.akismet.admin.controller');
+		/* @var $admin_controller \senky\akismet\controller\admin_controller */
+		$admin_controller = $phpbb_container->get('senky.akismet.admin.controller');
 		$admin_controller->set_action($this->u_action);
 
 		$this->tpl_name = 'akismet_body';

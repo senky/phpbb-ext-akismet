@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\mock;
+namespace senky\akismet\tests\mock;
 
 class akismet_client_verify_key_result_mock extends \Gothick\AkismetClient\Result\VerifyKeyResult
 {

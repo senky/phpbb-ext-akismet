@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\event;
+namespace senky\akismet\tests\event;
 
 class main_listener_test extends main_listener_base
 {
@@ -30,6 +30,6 @@ class main_listener_test extends main_listener_base
 			'core.user_add_after',
 			'core.delete_group_after',
 			'core.approve_posts_after',
-		), array_keys(\phpbb\akismet\event\main_listener::getSubscribedEvents()));
+		), array_keys(\senky\akismet\event\main_listener::getSubscribedEvents()));
 	}
 }

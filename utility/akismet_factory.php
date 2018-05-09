@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\utility;
+namespace senky\akismet\utility;
 
 /**
  * The Akismet Factory class is used to create a new vendor Akismet
@@ -44,6 +44,6 @@ class akismet_factory
 	 */
 	public function create_akismet()
 	{
-		return new \Gothick\AkismetClient\Client(generate_board_url(), 'phpBB', $this->config['version'], $this->config['phpbb_akismet_api_key']);
+		return new \Gothick\AkismetClient\Client(generate_board_url(), 'phpBB', $this->config['version'], $this->config['senky_akismet_api_key']);
 	}
 }

@@ -7,7 +7,7 @@
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
-namespace phpbb\akismet\migrations\v10x;
+namespace senky\akismet\migrations\v10x;
 
 class m1_acp_module extends \phpbb\db\migration\migration
 {
@@ -49,7 +49,7 @@ class m1_acp_module extends \phpbb\db\migration\migration
 				'acp',
 				'ACP_AKISMET_TITLE',
 				array(
-					'module_basename' => '\phpbb\akismet\acp\akismet_module',
+					'module_basename' => '\senky\akismet\acp\akismet_module',
 					'modes' => array('settings')
 				),
 			)),

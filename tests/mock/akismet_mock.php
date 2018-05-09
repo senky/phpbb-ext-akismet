@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\mock;
+namespace senky\akismet\tests\mock;
 
 /**
  *

@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\event;
+namespace senky\akismet\tests\event;
 
 class submit_ham_test extends main_listener_base
 {
@@ -105,7 +105,7 @@ class submit_ham_test extends main_listener_base
 		$dispatcher->addListener('core.approve_posts_after', array($this->get_listener(), 'submit_ham'));
 		
 		// Make sure we have API key set
-		$this->config['phpbb_akismet_api_key'] = 'abcdef';
+		$this->config['senky_akismet_api_key'] = 'abcdef';
 
 		// Set expectations
 		if ($action == 'approve')

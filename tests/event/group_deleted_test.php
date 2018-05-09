@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\event;
+namespace senky\akismet\tests\event;
 
 class group_deleted_test extends main_listener_base
 {
@@ -28,8 +28,8 @@ class group_deleted_test extends main_listener_base
 			->with($this->equalTo('mod'));
 
 		// Initialize config values
-		$this->config->set('phpbb_akismet_add_registering_spammers_to_group', 888);
-		$this->config->set('phpbb_akismet_add_registering_blatant_spammers_to_group', 999);
+		$this->config->set('senky_akismet_add_registering_spammers_to_group', 888);
+		$this->config->set('senky_akismet_add_registering_blatant_spammers_to_group', 999);
 
 		// Event data
 		$group_id = 123;
@@ -43,8 +43,8 @@ class group_deleted_test extends main_listener_base
 
 		// Match data after event was dispatched
 		$event_data_after = $event->get_data_filtered($event_data);
-		$this->assertEquals(888, $this->config['phpbb_akismet_add_registering_spammers_to_group']);
-		$this->assertEquals(999, $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group']);
+		$this->assertEquals(888, $this->config['senky_akismet_add_registering_spammers_to_group']);
+		$this->assertEquals(999, $this->config['senky_akismet_add_registering_blatant_spammers_to_group']);
 	}
 
 	/**
@@ -63,8 +63,8 @@ class group_deleted_test extends main_listener_base
 			->with($this->equalTo('mod'));
 
 		// Initialize config values
-		$this->config->set('phpbb_akismet_add_registering_spammers_to_group', 888);
-		$this->config->set('phpbb_akismet_add_registering_blatant_spammers_to_group', 999);
+		$this->config->set('senky_akismet_add_registering_spammers_to_group', 888);
+		$this->config->set('senky_akismet_add_registering_blatant_spammers_to_group', 999);
 
 		// Event data
 		$group_id = 888;
@@ -78,8 +78,8 @@ class group_deleted_test extends main_listener_base
 
 		// Match data after event was dispatched
 		$event_data_after = $event->get_data_filtered($event_data);
-		$this->assertEquals(0, $this->config['phpbb_akismet_add_registering_spammers_to_group']);
-		$this->assertEquals(999, $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group']);
+		$this->assertEquals(0, $this->config['senky_akismet_add_registering_spammers_to_group']);
+		$this->assertEquals(999, $this->config['senky_akismet_add_registering_blatant_spammers_to_group']);
 	}
 
 	/**
@@ -98,8 +98,8 @@ class group_deleted_test extends main_listener_base
 			->with($this->equalTo('mod'));
 
 		// Initialize config values
-		$this->config->set('phpbb_akismet_add_registering_spammers_to_group', 888);
-		$this->config->set('phpbb_akismet_add_registering_blatant_spammers_to_group', 999);
+		$this->config->set('senky_akismet_add_registering_spammers_to_group', 888);
+		$this->config->set('senky_akismet_add_registering_blatant_spammers_to_group', 999);
 
 		// Event data
 		$group_id = 999;
@@ -113,7 +113,7 @@ class group_deleted_test extends main_listener_base
 
 		// Match data after event was dispatched
 		$event_data_after = $event->get_data_filtered($event_data);
-		$this->assertEquals(888, $this->config['phpbb_akismet_add_registering_spammers_to_group']);
-		$this->assertEquals(0, $this->config['phpbb_akismet_add_registering_blatant_spammers_to_group']);
+		$this->assertEquals(888, $this->config['senky_akismet_add_registering_spammers_to_group']);
+		$this->assertEquals(0, $this->config['senky_akismet_add_registering_blatant_spammers_to_group']);
 	}
 }

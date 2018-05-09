@@ -8,11 +8,11 @@
  *
  */
 
-namespace phpbb\akismet\controller
+namespace senky\akismet\controller
 {
 	function check_form_key($dummy)
 	{
-		return \phpbb\akismet\tests\controller\admin_controller_test::$check_form_key_result;
+		return \senky\akismet\tests\controller\admin_controller_test::$check_form_key_result;
 	}
 
 	function add_form_key($dummy)
@@ -25,7 +25,7 @@ namespace phpbb\akismet\controller
 	}
 }
 
-namespace phpbb\akismet\tests\controller
+namespace senky\akismet\tests\controller
 {
 	class admin_controller_test extends \phpbb_test_case
 	{
@@ -95,7 +95,7 @@ namespace phpbb\akismet\tests\controller
 
 		public function get_controller()
 		{
-			$controller = new \phpbb\akismet\controller\admin_controller(
+			$controller = new \senky\akismet\controller\admin_controller(
 				$this->request,
 				$this->template,
 				$this->user,
@@ -104,7 +104,7 @@ namespace phpbb\akismet\tests\controller
 				$this->language,
 				$this->group_helper,
 				$this->db,
-				new \phpbb\akismet\tests\mock\akismet_mock(false, $this->key_verified),
+				new \senky\akismet\tests\mock\akismet_mock(false, $this->key_verified),
 				$this->php_ext,
 				$this->root_path,
 				$this->groups_table
@@ -119,7 +119,7 @@ namespace phpbb\akismet\tests\controller
 		 */
 		public function test_construct()
 		{
-			$this->assertInstanceOf(\phpbb\akismet\controller\admin_controller::class, $this->get_controller());
+			$this->assertInstanceOf(\senky\akismet\controller\admin_controller::class, $this->get_controller());
 		}
 
 		/**
@@ -187,11 +187,11 @@ namespace phpbb\akismet\tests\controller
 			$this->key_verified = true;
 			$controller = $this->get_controller();
 
-			$this->config['phpbb_akismet_api_key'] = 'IM_AN_API_KEY_HONEST_GUV_123';
-			$this->config['phpbb_akismet_check_registrations'] = 1;
-			$this->config['phpbb_akismet_add_registering_spammers_to_group'] = 2;
-			$this->config['phpbb_akismet_add_registering_blatant_spammers_to_group'] = 3;
-			$this->config['phpbb_akismet_skip_check_after_n_posts'] = 5;
+			$this->config['senky_akismet_api_key'] = 'IM_AN_API_KEY_HONEST_GUV_123';
+			$this->config['senky_akismet_check_registrations'] = 1;
+			$this->config['senky_akismet_add_registering_spammers_to_group'] = 2;
+			$this->config['senky_akismet_add_registering_blatant_spammers_to_group'] = 3;
+			$this->config['senky_akismet_skip_check_after_n_posts'] = 5;
 
 			$this->db->expects($this->exactly(8))
 				->method('sql_fetchrow')

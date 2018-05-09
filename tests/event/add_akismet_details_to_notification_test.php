@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\event;
+namespace senky\akismet\tests\event;
 
 class add_akismet_details_to_notification_test extends main_listener_base
 {
@@ -16,39 +16,39 @@ class add_akismet_details_to_notification_test extends main_listener_base
 	{
 		return array(
 			array(
-				true, // phpbb_akismet_unapproved
+				true, // senky_akismet_unapproved
 				'notification.type.some_type_or_other', // Incoming notification type
 				'notification.type.some_type_or_other' // Expected outgoing notification type
 			),
 			array(
-				false, // phpbb_akismet_unapproved
+				false, // senky_akismet_unapproved
 				'notification.type.some_type_or_other', // Incoming notification type
 				'notification.type.some_type_or_other' // Expected outgoing notification type
 			),
 			array(
-				null, // phpbb_akismet_unapproved
+				null, // senky_akismet_unapproved
 				'notification.type.some_type_or_other', // Incoming notification type
 				'notification.type.some_type_or_other' // Expected outgoing notification type
 			),
 			array(
-				null, // phpbb_akismet_unapproved
+				null, // senky_akismet_unapproved
 				'notification.type.post_in_queue', // Incoming notification type
 				'notification.type.post_in_queue' // Expected outgoing notification type
 			),
 			array(
-				null, // phpbb_akismet_unapproved
+				null, // senky_akismet_unapproved
 				'notification.type.topic_in_queue', // Incoming notification type
 				'notification.type.topic_in_queue' // Expected outgoing notification type
 			),
 			array(
-				true, // phpbb_akismet_unapproved
+				true, // senky_akismet_unapproved
 				'notification.type.post_in_queue', // Incoming notification type
-				'phpbb.akismet.notification.type.post_in_queue' // Expected outgoing notification type
+				'senky.akismet.notification.type.post_in_queue' // Expected outgoing notification type
 			),
 			array(
-				true, // phpbb_akismet_unapproved
+				true, // senky_akismet_unapproved
 				'notification.type.topic_in_queue', // Incoming notification type
-				'phpbb.akismet.notification.type.topic_in_queue' // Expected outgoing notification type
+				'senky.akismet.notification.type.topic_in_queue' // Expected outgoing notification type
 			),
 		);
 	}
@@ -56,7 +56,7 @@ class add_akismet_details_to_notification_test extends main_listener_base
 	/**
 	 * @dataProvider notification_template_data
 	 */
-	public function test_akismet_notification_template_triggered($phpbb_akismet_unapproved, $incoming_type, $expected_outgoing_type)
+	public function test_akismet_notification_template_triggered($senky_akismet_unapproved, $incoming_type, $expected_outgoing_type)
 	{
 		// Subscribe our method
 		$dispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
@@ -64,7 +64,7 @@ class add_akismet_details_to_notification_test extends main_listener_base
 
 		// Event data
 		$data = array(
-			'phpbb_akismet_unapproved' => $phpbb_akismet_unapproved,
+			'senky_akismet_unapproved' => $senky_akismet_unapproved,
 		);
 		$notification_type_name = $incoming_type;
 

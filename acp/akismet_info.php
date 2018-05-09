@@ -8,19 +8,19 @@
  *
  */
 
-namespace phpbb\akismet\acp;
+namespace senky\akismet\acp;
 
 class akismet_info
 {
 	public function module()
 	{
 		return array(
-			'filename'	=> '\phpbb\akismet\acp\akismet_module',
+			'filename'	=> '\senky\akismet\acp\akismet_module',
 			'title'		=> 'ACP_AKISMET_TITLE',
 			'modes'		=> array(
 				'settings'	=> array(
 					'title'	=> 'ACP_AKISMET_SETTINGS',
-					'auth'	=> 'ext_phpbb/akismet && acl_a_board',
+					'auth'	=> 'ext_senky/akismet && acl_a_board',
 					'cat'	=> array('ACP_AKISMET_TITLE'),
 				),
 			),

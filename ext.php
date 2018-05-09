@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet;
+namespace senky\akismet;
 
 /**
  * Extension class for custom enable/disable/purge actions
@@ -25,8 +25,8 @@ namespace phpbb\akismet;
 class ext extends \phpbb\extension\base
 {
 	protected static $notification_types = array(
-			'phpbb.akismet.notification.type.topic_in_queue',
-			'phpbb.akismet.notification.type.post_in_queue',
+			'senky.akismet.notification.type.topic_in_queue',
+			'senky.akismet.notification.type.post_in_queue',
 	);
 
 	/**

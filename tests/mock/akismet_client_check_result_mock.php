@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\mock;
+namespace senky\akismet\tests\mock;
 
 class akismet_client_check_result_mock extends \Gothick\AkismetClient\Result\CommentCheckResult
 {

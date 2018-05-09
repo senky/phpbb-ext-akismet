@@ -8,7 +8,7 @@
  *
  */
 
-namespace phpbb\akismet\tests\event;
+namespace senky\akismet\tests\event;
 
 class check_submitted_post_test extends main_listener_base
 {
@@ -81,11 +81,11 @@ class check_submitted_post_test extends main_listener_base
 		$dispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
 		$dispatcher->addListener('core.posting_modify_submit_post_before', array($this->get_listener(), 'check_submitted_post'));
 		
-		// Set username, user posts, phpbb_akismet_api_key and skip_check_after_n_posts
+		// Set username, user posts, senky_akismet_api_key and skip_check_after_n_posts
 		$this->user->data['username'] = $username;
 		$this->user->data['user_posts'] = $user_posts;
-		$this->config['phpbb_akismet_api_key'] = 'abcdef';
-		$this->config['phpbb_akismet_skip_check_after_n_posts'] = 5;
+		$this->config['senky_akismet_api_key'] = 'abcdef';
+		$this->config['senky_akismet_skip_check_after_n_posts'] = 5;
 
 		$this->auth->expects($this->at(0))
 			->method('acl_getf_global')

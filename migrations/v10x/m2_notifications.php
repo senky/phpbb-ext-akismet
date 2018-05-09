@@ -7,14 +7,14 @@
  * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
  *
  */
-namespace phpbb\akismet\migrations\v10x;
+namespace senky\akismet\migrations\v10x;
 
 class m2_notifications extends \phpbb\db\migration\migration
 {
 	/** @var array New post types */
 	protected static $notification_types = array(
-			'phpbb.akismet.notification.type.post_in_queue',
-			'phpbb.akismet.notification.type.topic_in_queue',
+			'senky.akismet.notification.type.post_in_queue',
+			'senky.akismet.notification.type.topic_in_queue',
 	);
 
 	/**
@@ -23,7 +23,7 @@ class m2_notifications extends \phpbb\db\migration\migration
 	public function effectively_installed()
 	{
 		$sql = 'SELECT * FROM ' . $this->table_prefix . "notification_types
-			WHERE notification_type_name = 'phpbb.akismet.notification.type.post_in_queue'";
+			WHERE notification_type_name = 'senky.akismet.notification.type.post_in_queue'";
 		$result = $this->db->sql_query_limit($sql, 1);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -35,7 +35,7 @@ class m2_notifications extends \phpbb\db\migration\migration
 	 */
 	static public function depends_on()
 	{
-		return array('\phpbb\akismet\migrations\v10x\m1_acp_module');
+		return array('\senky\akismet\migrations\v10x\m1_acp_module');
 	}
 
 	/**

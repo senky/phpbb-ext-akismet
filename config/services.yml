@@ -1,20 +1,20 @@
 services:
-    phpbb.akismet.listener:
-        class: phpbb\akismet\event\main_listener
+    senky.akismet.listener:
+        class: senky\akismet\event\main_listener
         arguments:
             - '@user'
             - '@request'
             - '@config'
             - '@log'
             - '@auth'
-            - '@phpbb.akismet.client'
+            - '@senky.akismet.client'
             - '%core.php_ext%'
             - '%core.root_path%'
         tags:
             - { name: event.listener }
 
-    phpbb.akismet.admin.controller:
-        class: phpbb\akismet\controller\admin_controller
+    senky.akismet.admin.controller:
+        class: senky\akismet\controller\admin_controller
         arguments:
             - '@request'
             - '@template'
@@ -24,30 +24,30 @@ services:
             - '@language'
             - '@group_helper'
             - '@dbal.conn'
-            - '@phpbb.akismet.client'
+            - '@senky.akismet.client'
             - '%core.php_ext%'
             - '%core.root_path%'
             - '%tables.groups%'
 
-    phpbb.akismet.client.factory:
-        class: phpbb\akismet\utility\akismet_factory
+    senky.akismet.client.factory:
+        class: senky\akismet\utility\akismet_factory
         arguments:
             - '@config'
 
-    phpbb.akismet.client:
+    senky.akismet.client:
         class: Gothick\AkismetClient\Client
-        factory_service: phpbb.akismet.client.factory
+        factory_service: senky.akismet.client.factory
         factory_method: create_akismet
 
-    phpbb.akismet.notification.type.post_in_queue:
-        class: phpbb\akismet\notification\type\post_in_queue
+    senky.akismet.notification.type.post_in_queue:
+        class: senky\akismet\notification\type\post_in_queue
         shared: false
         parent: notification.type.post_in_queue
         tags:
             - { name: notification.type }
 
-    phpbb.akismet.notification.type.topic_in_queue:
-        class: phpbb\akismet\notification\type\topic_in_queue
+    senky.akismet.notification.type.topic_in_queue:
+        class: senky\akismet\notification\type\topic_in_queue
         shared: false
         parent: notification.type.topic_in_queue
         tags:
