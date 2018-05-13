@@ -26,7 +26,7 @@ $lang = array_merge($lang, array(
 
 	// Log operations
 	'AKISMET_LOG_SETTING_CHANGED'				=> '<strong>Akismet settings updated.</strong>',
-	'AKISMET_LOG_CALL_FAILED'					=> '<strong>Call to Akismet API failed</strong><br />» API returned: "%1$s"',
+	'AKISMET_LOG_CALL_FAILED'					=> '<strong>Call to Akismet API failed</strong><br />» API returned: “%1$s”',
 	'AKISMET_LOG_POST_DISAPPROVED'				=> '<strong>Disapproved post “%1$s” written by “%2$s” for the following reason</strong><br />» Post detected as spam by Akismet',
 	'AKISMET_LOG_TOPIC_DISAPPROVED'				=> '<strong>Disapproved topic “%1$s” written by “%2$s” for the following reason</strong><br />» Topic detected as spam by Akismet',
 	'AKISMET_LOG_SPAMMER_REGISTRATION'			=> '<strong>User %s: Spammy registration detected by Akismet</strong>',
