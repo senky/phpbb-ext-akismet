@@ -1,12 +1,13 @@
 <?php
 /**
- * Akismet initial migrations.
  *
- * @package phpBB Extension - Gothick Akismet
- * @copyright (c) 2015 Matt Gibson Creative Ltd.
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ * Akismet. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2018 Jakub Senko <jakubsenko@gmail.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
+
 namespace senky\akismet\migrations\v10x;
 
 class m1_acp_module extends \phpbb\db\migration\migration

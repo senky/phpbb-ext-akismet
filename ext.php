@@ -3,7 +3,7 @@
  *
  * Akismet. An extension for the phpBB Forum Software package.
  *
- * @copyright (c) 2018 phpBB Limited <https://www.phpbb.com>
+ * @copyright (c) 2018 Jakub Senko <jakubsenko@gmail.com>
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
