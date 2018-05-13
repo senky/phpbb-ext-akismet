@@ -9,7 +9,7 @@
  */
 namespace senky\akismet\migrations\v10x;
 
-class m3_configs extends \phpbb\db\migration\migration
+class m2_configs extends \phpbb\db\migration\migration
 {
 	/**
 	 * {@inheritDoc}
@@ -24,7 +24,7 @@ class m3_configs extends \phpbb\db\migration\migration
 	 */
 	static public function depends_on()
 	{
-		return array('\senky\akismet\migrations\v10x\m2_notifications');
+		return array('\senky\akismet\migrations\v10x\m1_acp_module');
 	}
 
 	/**

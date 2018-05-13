@@ -400,8 +400,6 @@ class main_listener implements EventSubscriberInterface
 				'ORIG_PATH_INFO',
 				'PATH_INFO',
 				'PATH_TRANSLATED',
-				'PHP_AUTH_DIGEST',
-				'PHP_AUTH_PW',
 				'PHP_SELF',
 				'PHP_AUTH_USER',
 				'QUERY_STRING',
