@@ -1,0 +1,15 @@
+Subject: Notificación de moderación de tema - "{TOPIC_TITLE}"
+
+Hola {USERNAME},
+
+Recibe esta notificación porque el tema "{TOPIC_TITLE}" en "{SITENAME}" necesita aprobación.
+
+Este tema fue identificado como spam por el servicio Akismet.
+
+Si quiere ver el tema, haga clic en el siguiente enlace:
+{U_VIEW_TOPIC}
+
+Si quiere ver el foro, haga clic en el siguiente enlace:
+{U_FORUM}
+
+{EMAIL_SIG}
