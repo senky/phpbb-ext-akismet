@@ -221,6 +221,7 @@ class main_listener implements EventSubscriberInterface
 		{
 			$params = array(
 				'user_ip'				=> $post['user_ip'],
+				'user_agent'			=> $post['username'], // we don't know user agent of the poster, let's fake it by their username
 				'comment_content'		=> $post['post_text'],
 				'comment_author_email'	=> $post['user_email'],
 				'comment_author'		=> $post['username'],
@@ -359,7 +360,7 @@ class main_listener implements EventSubscriberInterface
 		}
 		catch (\Exception $e)
 		{
-			$this->log->add('critical', $this->user->data['username'], $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
+			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'AKISMET_LOG_CALL_FAILED', false, array($e->getMessage()));
 		}
 
 		return null;
