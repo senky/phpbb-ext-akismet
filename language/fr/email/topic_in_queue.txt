@@ -1,0 +1,15 @@
+Subject: Notification de modération du sujet - « {TOPIC_TITLE} »
+
+Bonjour {USERNAME},
+
+Vous recevez cette notification car le sujet « {TOPIC_TITLE} » sur le forum « {SITENAME} » requiert votre approbation.
+
+Ce sujet a été identifié comme indésirable par le service « Akismet ».
+
+Pour consulter le sujet concerné, merci de cliquer sur le lien suivant :
+{U_VIEW_TOPIC}
+
+Pour consulter le forum contenant le sujet concerné, merci de cliquer sur le lien suivant :
+{U_FORUM}
+
+{EMAIL_SIG}
