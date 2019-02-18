@@ -30,6 +30,7 @@ class main_listener_test extends main_listener_base
 			'core.user_add_after',
 			'core.delete_group_after',
 			'core.approve_posts_after',
+			'core.disapprove_posts_after',
 		), array_keys(\senky\akismet\event\main_listener::getSubscribedEvents()));
 	}
 }

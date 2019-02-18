@@ -3,7 +3,7 @@
  *
  * Akismet. An extension for the phpBB Forum Software package.
  *
- * @copyright (c) 2018 Jakub Senko <jakubsenko@gmail.com>
+ * @copyright (c) 2019 Jakub Senko <jakubsenko@gmail.com>
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
@@ -79,6 +79,7 @@ class main_listener implements EventSubscriberInterface
 			'core.user_add_after'							=> 'check_new_user',
 			'core.delete_group_after'						=> 'group_deleted',
 			'core.approve_posts_after'						=> 'submit_ham',
+			'core.disapprove_posts_after'					=> 'submit_spam',
 		);
 	}
 
@@ -231,6 +232,35 @@ class main_listener implements EventSubscriberInterface
 				'comment_type'			=> 'forum-post',
 			);
 			$this->akismet_call('submitHam', $params, false); // without server, current user and page data are different than spammer's
+		}
+	}
+
+	/**
+	 * Inform Akismet service about true positive.
+	 *
+	 * @param \phpbb\event\data $event
+	 */
+	public function submit_spam($event)
+	{
+		if ($event['disapprove_reason_lang'] !== 'SPAM')
+		{
+			return;
+		}
+
+		foreach ($event['post_info'] as $post)
+		{
+			$params = array(
+				'user_ip'				=> $post['user_ip'],
+				'user_agent'			=> $post['username'], // we don't know user agent of the poster, let's fake it by their username
+				'comment_content'		=> $post['post_text'],
+				'comment_author_email'	=> $post['user_email'],
+				'comment_author'		=> $post['username'],
+				'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "p={$post['post_id']}", true, ''),
+				// 'forum-post' recommended for type:
+				// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
+				'comment_type'			=> 'forum-post',
+			);
+			$this->akismet_call('submitSpam', $params, false); // without server, current user and page data are different than spammer's
 		}
 	}
 
