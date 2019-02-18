@@ -2,7 +2,7 @@
 	"name": "senky/akismet",
 	"type": "phpbb-extension",
 	"description": "Akismet Anti-Spam Extension for phpBB",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"license": "GPL-2.0-only",
 	"authors": [
 		{
