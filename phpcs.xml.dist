@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="phpBB coding standard" namespace="phpbb">
-	<description>phpBB coding standard</description>
+<ruleset>
 	<file>.</file>
 	<exclude-pattern>./build</exclude-pattern>
 	<exclude-pattern>./tests</exclude-pattern>
