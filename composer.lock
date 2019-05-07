@@ -511,12 +511,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/senky/phpbb-coding-standard.git",
-                "reference": "90aab386e9617ad18d0f72a6ab69a18b6dd37042"
+                "reference": "56047eb5df364d208dc168ac03f1cbdcebede261"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/senky/phpbb-coding-standard/zipball/90aab386e9617ad18d0f72a6ab69a18b6dd37042",
-                "reference": "90aab386e9617ad18d0f72a6ab69a18b6dd37042",
+                "url": "https://api.github.com/repos/senky/phpbb-coding-standard/zipball/56047eb5df364d208dc168ac03f1cbdcebede261",
+                "reference": "56047eb5df364d208dc168ac03f1cbdcebede261",
                 "shasum": ""
             },
             "require": {
@@ -525,7 +525,7 @@
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
             "description": "phpBB Coding Standard for PHP_CodeSniffer complements Coding Guidelines by providing sniffs with additional checks.",
-            "time": "2019-05-07T13:17:56+00:00"
+            "time": "2019-05-07T15:19:23+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
