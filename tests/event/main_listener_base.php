@@ -66,6 +66,9 @@ class main_listener_base extends \phpbb_database_test_case
 		$this->config = new \phpbb\config\config(array());
 		$this->log = $this->getMockBuilder(\phpbb\log\dummy::class)->getMock();
 		$this->auth = $this->getMock(\phpbb\auth\auth::class);
+		$this->language = $this->getMockBuilder(\phpbb\language\language::class)
+			->disableOriginalConstructor()
+			->getMock();
 		$this->akismet = new \senky\akismet\tests\mock\akismet_mock();
 		$this->php_ext = $phpEx;
 		$this->root_path = $phpbb_root_path;
@@ -87,6 +90,7 @@ class main_listener_base extends \phpbb_database_test_case
 			$this->config,
 			$this->log,
 			$this->auth,
+			$this->language,
 			$this->akismet,
 			$this->php_ext,
 			$this->root_path

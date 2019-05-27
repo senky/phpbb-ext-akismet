@@ -31,6 +31,7 @@ class main_listener_test extends main_listener_base
 			'core.delete_group_after',
 			'core.approve_posts_after',
 			'core.disapprove_posts_after',
+			'core.message_admin_form_submit_before',
 		), array_keys(\senky\akismet\event\main_listener::getSubscribedEvents()));
 	}
 }
