@@ -40,7 +40,7 @@
 	"extra": {
 		"display-name": "Akismet Anti-Spam Extension",
 		"soft-require": {
-			"phpbb/phpbb": "~3.2"
+			"phpbb/phpbb": ">=3.2.6"
 		}
 	}
 }

@@ -19,14 +19,14 @@
 		</dl>
 	</fieldset>
 	<fieldset>
-		<legend>{{ lang('ACP_AKISMET_GENERAL_SETITNGS') }}</legend>
+		<legend>{{ lang('ACP_AKISMET_REGISTRATION_SETITNGS') }}</legend>
 		<dl>
 			<dt>
 				<label for="check_registrations">{{ lang('ACP_AKISMET_CHECK_REGISTRATIONS') ~ lang('COLON') }}</label><br/><span>{{ lang('ACP_AKISMET_CHECK_REGISTRATIONS_EXPLAIN') }}</span>
 			</dt>
 			<dd>
-				<label><input type="radio" class="radio" id="check_registrations" name="check_registrations" value="1"{% if S_CHECK_REGISTRATIONS %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
-				<label><input type="radio" class="radio" name="check_registrations" value="0"{% if not S_CHECK_REGISTRATIONS %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+				<label><input type="radio" class="radio" id="check_registrations" name="check_registrations" value="1"{% if S_CHECK_REGISTRATIONS %} checked{% endif %} /> {{ lang('YES') }}</label>
+				<label><input type="radio" class="radio" name="check_registrations" value="0"{% if not S_CHECK_REGISTRATIONS %} checked{% endif %} /> {{ lang('NO') }}</label>
 			</dd>
 		</dl>
 		<dl>
@@ -51,12 +51,27 @@
 				</select>
 			</dd>
 		</dl>
+	</fieldset>
+	<fieldset>
+		<legend>{{ lang('ACP_AKISMET_POST_SETITNGS') }}</legend>
 		<dl>
 			<dt>
 				<label for="skip_check_after_n_posts">{{ lang('ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS') ~ lang('COLON') }}</label><br /><span>{{ lang('ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS_EXPLAIN') }}</span>
 			</dt>
 			<dd>
 				<input type="number" min="0" id="skip_check_after_n_posts" name="skip_check_after_n_posts" value="{{ SKIP_CHECK_AFTER_N_POSTS }}" maxlength="255" />
+			</dd>
+		</dl>
+	</fieldset>
+	<fieldset>
+		<legend>{{ lang('ACP_AKISMET_ADMIN_FORM_SETITNGS') }}</legend>
+		<dl>
+			<dt>
+				<label for="check_admin_form">{{ lang('ACP_AKISMET_CHECK_ADMIN_FORM') ~ lang('COLON') }}</label><br/><span>{{ lang('ACP_AKISMET_CHECK_ADMIN_FORM_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<label><input type="radio" class="radio" id="check_admin_form" name="check_admin_form" value="1"{% if S_CHECK_ADMIN_FORM %} checked{% endif %} /> {{ lang('YES') }}</label>
+				<label><input type="radio" class="radio" name="check_admin_form" value="0"{% if not S_CHECK_ADMIN_FORM %} checked{% endif %} /> {{ lang('NO') }}</label>
 			</dd>
 		</dl>
 	</fieldset>

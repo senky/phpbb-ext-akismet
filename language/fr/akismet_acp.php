@@ -4,7 +4,7 @@
  * Akismet Anti-Spam Extension. An extension for the phpBB Forum Software package.
  * French translation by Galixte (http://www.galixte.com)
  *
- * @copyright (c) 2018 Jakub Senko <jakubsenko@gmail.com>
+ * @copyright (c) 2019 Jakub Senko <jakubsenko@gmail.com>
  * @license GNU General Public License, version 2 (GPL-2.0-only)
  *
  */
@@ -51,7 +51,7 @@ $lang = array_merge($lang, array(
 
 	'ACP_AKISMET_AKISMET_API_KEY'				=> 'Clé de l’API du service « Akismet »',
 	'ACP_AKISMET_API_KEY'						=> 'Clé de l’API',
-	'ACP_AKISMET_GENERAL_SETITNGS'				=> 'Paramètres généraux',
+	'ACP_AKISMET_REGISTRATION_SETITNGS'			=> 'Paramètres généraux',
 	'ACP_AKISMET_CHECK_REGISTRATIONS'			=> 'Vérifier les nouveaux enregistrements d’utilisateurs au moyen du service « Akismet »',
 	'ACP_AKISMET_CHECK_REGISTRATIONS_EXPLAIN'	=> 'Permet d’activer la détection des utilisateurs indésirables au moyen du service « Akismet » lors de leur enregistrement sur le forum avant même qu’ils aient publiés un message sur ce dernier.',
 
@@ -63,6 +63,11 @@ $lang = array_merge($lang, array(
 	'ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP'			=> 'Ajouter les utilisateurs indésirables avérés à un groupe',
 	'ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP_EXPLAIN'	=> 'Permet d’ajouter les utilisateurs indésirables « avérés » (flagrants). Il est possible d’ajouter ces utilisateurs dans un groupe particulier, permettant de ne pas les autoriser à publier des messages. <strong>Information : Pour des raisons de sécurité, il est possible d’ajouter les utilisateurs indésirables nouvellement enregistrés uniquement dans les groupes supplémentaires créés par l’administrateur ou dans le groupe des « Nouveaux utilisateurs enregistrés »</strong>.',
 
+	'ACP_AKISMET_POST_SETITNGS'						=> 'Post Settings',
 	'ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS'			=> 'Ignorer la vérification pour laquelle un utilisateur a déjà plus de messages approuvés que le nombre saisi ci-contre',
 	'ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS_EXPLAIN'	=> 'Permet de vérifier chaque message si défini sur « 0 ». Option utile dans les situations où un compte utilisateur a été piraté, en contrepartie la charge sur le serveur Web hébergeant le forum sera plus importante.',
+
+	'ACP_AKISMET_ADMIN_FORM_SETITNGS'		=> 'Contact Us Form Settings',
+	'ACP_AKISMET_CHECK_ADMIN_FORM'			=> 'Check Contact Us for submissions',
+	'ACP_AKISMET_CHECK_ADMIN_FORM_EXPLAIN'	=> 'If you choose “yes”, Akismet will stop spam submissions of Contact Us form. WARNING: This might potentially prevent regular users from contacting you!',
 ));

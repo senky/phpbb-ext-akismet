@@ -3,7 +3,7 @@
  *
  * Akismet. An extension for the phpBB Forum Software package.
  *
- * @copyright (c) 2018 Jakub Senko <jakubsenko@gmail.com>
+ * @copyright (c) 2019 Jakub Senko <jakubsenko@gmail.com>
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
@@ -121,6 +121,7 @@ class admin_controller
 			'S_GROUP_LIST'				=> $this->group_select_options($this->config['senky_akismet_add_registering_spammers_to_group']),
 			'S_GROUP_LIST_BLATANT'		=> $this->group_select_options($this->config['senky_akismet_add_registering_blatant_spammers_to_group']),
 			'SKIP_CHECK_AFTER_N_POSTS'	=> $this->config['senky_akismet_skip_check_after_n_posts'],
+			'S_CHECK_ADMIN_FORM'		=> $this->config['senky_akismet_check_admin_form'],
 		));
 	}
 
@@ -171,6 +172,7 @@ class admin_controller
 		$this->config->set('senky_akismet_add_registering_spammers_to_group', $this->request->variable('add_registering_spammers_to_group', 0));
 		$this->config->set('senky_akismet_add_registering_blatant_spammers_to_group', $this->request->variable('add_registering_blatant_spammers_to_group', 0));
 		$this->config->set('senky_akismet_skip_check_after_n_posts', $this->request->variable('skip_check_after_n_posts', 0));
+		$this->config->set('senky_akismet_check_admin_form', $this->request->variable('check_admin_form', 0));
 	}
 
 	protected function verify_key($key)

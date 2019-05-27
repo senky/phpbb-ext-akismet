@@ -3,7 +3,7 @@
  *
  * Akismet. An extension for the phpBB Forum Software package.
  *
- * @copyright (c) 2018 Jakub Senko <jakubsenko@gmail.com>
+ * @copyright (c) 2019 Jakub Senko <jakubsenko@gmail.com>
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
@@ -31,7 +31,7 @@ $lang = array_merge($lang, array(
 
 	'ACP_AKISMET_AKISMET_API_KEY'				=> 'Clave API de Akismet',
 	'ACP_AKISMET_API_KEY'						=> 'Clave API',
-	'ACP_AKISMET_GENERAL_SETITNGS'				=> 'Ajustes Generales',
+	'ACP_AKISMET_REGISTRATION_SETITNGS'			=> 'Ajustes Generales',
 	'ACP_AKISMET_CHECK_REGISTRATIONS'			=> 'Verificar nuevos registros de usuarios con Akismet',
 	'ACP_AKISMET_CHECK_REGISTRATIONS_EXPLAIN'	=> 'Si eliges “si”, Akismet intentará detectar probables spammers tan pronto como se registren, antes de que hayan publicado respuestas o nuevos temas.',
 
@@ -43,6 +43,11 @@ $lang = array_merge($lang, array(
 	'ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP'			=> 'Añadir el registro de spammers evidentes a un grupo',
 	'ACP_AKISMET_ADD_DETECTED_BLATANT_SPAMMERS_TO_GROUP_EXPLAIN'	=> 'La detección de Akismet “evidente” de spammers se desencadenará por el peor, más penetrante y obvio spam. Puedes agregar estos spammers a un grupo en particular, también, sin privilegios de publicación. <strong>Nota: Por razones de seguridad, solo puede agregar nuevos registros de spam a grupos definidos por el usuario o al grupo Nuevos usuarios registrados</strong>.',
 
+	'ACP_AKISMET_POST_SETITNGS'						=> 'Post Settings',
 	'ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS'			=> 'Omitir la comprobación si un usuario ya tiene más de este número de mensajes aprobadas',
 	'ACP_AKISMET_SKIP_CHECK_AFTER_N_POSTS_EXPLAIN'	=> 'Establécelo en 0 para verificar cada mensaje independientemente. Esto podría ser útil, porque en caso de que la cuenta de alguien se vea comprometida, los mensajes no deseados se enviarán a la cola de moderación y se pueden eliminar fácilmente. Pero también añade más carga al servidor.',
+
+	'ACP_AKISMET_ADMIN_FORM_SETITNGS'		=> 'Contact Us Form Settings',
+	'ACP_AKISMET_CHECK_ADMIN_FORM'			=> 'Check Contact Us for submissions',
+	'ACP_AKISMET_CHECK_ADMIN_FORM_EXPLAIN'	=> 'If you choose “yes”, Akismet will stop spam submissions of Contact Us form. WARNING: This might potentially prevent regular users from contacting you!',
 ));

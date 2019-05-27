@@ -32,6 +32,9 @@ class main_listener implements EventSubscriberInterface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \phpbb\language\language */
+	protected $language;
+
 	/** @var \Gothick\AkismetClient\Client */
 	protected $akismet;
 
@@ -56,13 +59,14 @@ class main_listener implements EventSubscriberInterface
 	 * @param string                   			  $php_ext			php extension
 	 * @param string                   			  $phpbb_root_path	phpBB root path
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\request\request $request, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\auth\auth $auth, \Gothick\AkismetClient\Client $akismet, $php_ext, $phpbb_root_path)
+	public function __construct(\phpbb\user $user, \phpbb\request\request $request, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\auth\auth $auth, \phpbb\language\language $language, \Gothick\AkismetClient\Client $akismet, $php_ext, $phpbb_root_path)
 	{
 		$this->user = $user;
 		$this->request = $request;
 		$this->config = $config;
 		$this->log = $log;
 		$this->auth = $auth;
+		$this->language = $language;
 		$this->akismet = $akismet;
 		$this->php_ext = $php_ext;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -80,6 +84,7 @@ class main_listener implements EventSubscriberInterface
 			'core.delete_group_after'						=> 'group_deleted',
 			'core.approve_posts_after'						=> 'submit_ham',
 			'core.disapprove_posts_after'					=> 'submit_spam',
+			'core.message_admin_form_submit_before'			=> 'check_admin_form',
 		);
 	}
 
@@ -265,6 +270,43 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
+	 * Check "contact us" form for spam
+	 *
+	 * @param \phpbb\event\data $event
+	 */
+	public function check_admin_form($event)
+	{
+		if (!$this->config['senky_akismet_check_admin_form'])
+		{
+			return;
+		}
+
+		// Skip the Akismet check for anyone who's a moderator or an administrator.
+		if ($this->auth->acl_getf_global('m_') || $this->auth->acl_getf_global('a_'))
+		{
+			return;
+		}
+
+		// Skip the Akismet check for users with more than defined posts
+		if ($this->config['senky_akismet_skip_check_after_n_posts'] != 0 && $this->user->data['user_posts'] > $this->config['senky_akismet_skip_check_after_n_posts'])
+		{
+			return;
+		}
+
+		$data = [
+			'message'	=> $event['body'],
+		];
+		if ($this->is_spam($data))
+		{
+			$this->language->add_lang('admin_form', 'senky/akismet');
+
+			$event['errors'] += [
+				$this->language->lang('SPAM_MESSAGE'),
+			];
+		}
+	}
+
+	/**
 	 * Add user to a group. Load phpBB function when needed.
 	 *
 	 * @param int $group_id
@@ -299,11 +341,15 @@ class main_listener implements EventSubscriberInterface
 			'comment_author_email'	=> $this->user->data['user_email'],
 			'comment_author'		=> $this->user->data['username'],
 			'comment_author_url'	=> isset($this->user->profile_fields['pf_phpbb_website']) ? $this->user->profile_fields['pf_phpbb_website'] : '',
-			'permalink'				=> generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "p={$data['post_id']}", true, ''),
 			// 'forum-post' recommended for type:
 			// http://blog.akismet.com/2012/06/19/pro-tip-tell-us-your-comment_type/
 			'comment_type'			=> 'forum-post',
 		);
+
+		if (!empty($data['post_id']))
+		{
+			$params['permalink'] = generate_board_url() . '/' . append_sid("viewtopic.{$this->php_ext}", "p={$data['post_id']}", true, '');
+		}
 
 		$result = $this->akismet_comment_check($params);
 
