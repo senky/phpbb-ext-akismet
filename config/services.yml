@@ -37,8 +37,7 @@ services:
 
     senky.akismet.client:
         class: Gothick\AkismetClient\Client
-        factory_service: senky.akismet.client.factory
-        factory_method: create_akismet
+        factory: ['@senky.akismet.client.factory', 'create_akismet']
 
     senky.akismet.notification.type.post_in_queue:
         class: senky\akismet\notification\type\post_in_queue
