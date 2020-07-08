@@ -1,0 +1,15 @@
+Subject: Modereerimisjärgne teatis - "{TOPIC_TITLE}"
+
+Tere {USERNAME},
+
+Saate selle teatise, kuna postitus "{POST_SUBJECT}" foorumis "{SITENAME}" vajab kinnitust.
+
+Akismeti teenus tuvastas selle postituse rämpspostiks.
+
+Kui soovite postitust vaadata, klõpsake järgmisel lingil:
+{U_VIEW_POST}
+
+Kui soovite teemat vaadata, klõpsake järgmist linki:
+{U_TOPIC}
+
+{EMAIL_SIG}

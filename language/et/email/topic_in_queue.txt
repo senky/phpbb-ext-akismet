@@ -1,0 +1,15 @@
+Subject: Teema modereerimise teatis - "{TOPIC_TITLE}"
+
+Tere {USERNAME},
+
+Saate selle teatise, kuna teema "{TOPIC_TITLE}" foorumis "{SITENAME}" vajab kinnitamist.
+
+Akismeti teenus leidis selle teema rämpspostina.
+
+Kui soovite teemat vaadata, klõpsake järgmist linki:
+{U_VIEW_TOPIC}
+
+Kui soovite foorumit vaadata, klõpsake järgmist linki:
+{U_FORUM}
+
+{EMAIL_SIG}
