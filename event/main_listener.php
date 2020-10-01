@@ -294,7 +294,9 @@ class main_listener implements EventSubscriberInterface
 		}
 
 		$data = [
-			'message'	=> $event['body'],
+			'message'		=> $event['subject'] . "\n" . $event['body'],
+			'user_email'	=> $this->user->data['is_registered'] ? $this->user->data['user_email'] : $this->request->variable('email', ''),
+			'username'		=> $this->user->data['is_registered'] ? $this->user->data['username'] : $this->request->variable('name', '', true),
 		];
 		if ($this->is_spam($data))
 		{
